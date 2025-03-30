@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/flowbite@1.6.6/dist/flowbite.min.js"></script>
+  <script src="./js/product.js"></script>
+  <script src="js/category.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="stylesheet" href="./css/style.css">
+  <title>Document</title>
+</head>
+
+<body>
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-gray-200 px-4 lg:px-6 py-2.5 border-b border-gray-200"
+    style="box-shadow: 0px 4px 8px 0px #0A1A280A;">
+    <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+      <a href="https://flowbite.com" class="flex items-center">
+        <!-- remember to change link -->
+        <img src="images/logo-grocery-1.png" class="mr-3 h-6 sm:h-9" alt="Flowbite Logo" />
+        <span class="self-center text-xl font-semibold text-green-700 whitespace-nowrap">Green</span>
+        <span class="self-center text-xl font-semibold text-green-500 whitespace-nowrap">Mart</span>
+      </a>
+      <div class="flex items-center space-x-4">
+        <!-- Search form -->
+        <form class="w-[350px]">
+          <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 bg-green-50 sr-only">Search</label>
+          <div class="flex items-center border border-green-700/30 rounded-lg bg-green-50 px-2">
+            <svg class="w-5 h-5 text-gray-500 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 20 20">
+              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
+            </svg>
+            <input type="search" id="default-search"
+              class="flex-grow p-2 text-sm text-gray-900 bg-gray-50 focus:outline-none focus:ring-0"
+              placeholder="Search for groceries..." required />
+            <!-- <button type="submit"
+                      class="ml-2 px-4 py-1 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium text-sm"
+                      style="border-radius: 6px;">
+                      Search
+                    </button> -->
+          </div>
+        </form>
+        <!-- Cart icon -->
+        <button type="button" id="cartIcon"
+  class="relative inline-flex items-center p-2 text-sm font-medium text-center border border-green-700/30 text-green-600 bg-green-50 rounded-full hover:bg-green-200 focus:ring-4 focus:outline-none focus:ring-green-400">
+  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
+    <path fill="currentColor"
+      d="M5.525 21q-.675 0-1.2-.413T3.6 19.525l-2.55-9.25Q.925 9.8 1.213 9.4T2 9h4.75l4.4-6.55q.125-.2.35-.325T11.975 2t.475.125t.35.325L17.2 9H22q.5 0 .788.4t.162.875l-2.55 9.25q-.2.65-.725 1.063t-1.2.412zM12 17q.825 0 1.413-.587T14 15t-.587-1.412T12 13t-1.412.588T10 15t.588 1.413T12 17M9.175 9H14.8l-2.825-4.2z" />
+  </svg>
+  <span class="sr-only">Cart</span>
+  <div id="cart-count"
+    class="absolute inline-flex items-center justify-center w-5 h-5 font-semibold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 text-[10px]">
+    0
+  </div>
+</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Modal placeholder -->
+  <div id="productDetail-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl max-w-4xl w-full p-6 relative">
+     <button id="closeModalButton"  class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+  <button class="close-btn">X</button>
+  
+  <!-- Horizontal banner -->
+<section class="relative bg-cover bg-center bg-no-repeat w-full h-[280px] md:h-[280px] pt-8"
+style="background-image: url('/images/banner-2.png');">
+<div class="absolute inset-0 bg-black/20"></div>
+<div class="relative z-10 max-w-screen-xl mx-auto h-full px-6 flex items-center">
+  <div class="text-white max-w-xl space-y-4">
+    <h2 class="text-2xl md:text-3xl font-semibold mb-3">ORGANIC VEGETABLES</h2>
+    <p class="text-xs md:text-sm font-light text-white/80 leading-relaxed">
+      Enjoy the taste of nature with our organic vegetables—locally grown, chemical-free, and rich in nutrients.
+      Perfect for healthy meals, they bring freshness and flavor straight to your kitchen. Treat yourself and your
+      family to ingredients you can trust.
+    </p>
+    <a href="#"
+      class="inline-block bg-green-600 hover:bg-green-700 text-white text-xs font-medium px-4 py-2 rounded shadow">
+      GET FRESH NOW
+    </a>
+  </div>
+</div>
+</section>
+  <!-- Categories -->
+  <section class="max-w-screen-xl mx-auto px-4 py-6 border-b-1 border-gray-200/80">
+    <div class="text-center mb-6">
+      <h2 class="mt-3 text-xl font-semibold text-green-800 sm:text-2xl">Featured Categories</h2>
+      <p class="text-sm text-gray-400 mt-1">Explore fresh picks for every lifestyle. Carefully selected and delivered to
+        your door.</p>
+    </div>
+    <div id="category-layout" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-6">
+      </div>
+  </section>
+  <!-- Product list -->
+  <section class="bg-gray-50 py-4 antialiased md:py-4">
+    <div class="mx-auto max-w-screen-xl px-4 2xl:px-0">
+      <!-- Heading & Filters -->
+      <div class="mt-2 mb-4 flex items-center justify-between md:mb-8">
+        <h2 class="mt-2 text-xl font-semibold text-green-800 sm:text-2xl">All Products</h2>
+        <div class="flex justify-end">
+          <div class="relative">
+            <!-- Button -->
+<button id="dropdownDefault" onclick="toggleDropdown()"
+class="text-gray-700 bg-white hover:bg-gray-200 border border-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center">
+Filter by category
+<svg id="dropdown-arrow" class="w-4 h-4 ml-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+</svg>
+</button>
+
+<!-- Dropdown -->
+<div id="dropdown" class="absolute right-0 mt-2 z-10 hidden w-60 p-4 bg-white rounded-lg shadow-lg border border-gray-200">
+<ul class="space-y-4 text-sm text-gray-800">
+  <!-- Main Category Template -->
+  <li>
+    <label class="flex items-center font-semibold">
+      <input type="checkbox" id="Fruit & Vegetable"
+        class="w-5 h-5 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+      Fruit & Vegetable
+    </label>
+    <!-- Sub -->
+    <ul class="ml-6 mt-2 space-y-2 border-l border-gray-200/70 pl-4">
+      <li class="flex items-center">
+        <input type="checkbox" id="Fruit"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Fruit" class="text-sm font-normal text-gray-700">Fruit</label>
+      </li>
+      <li class="flex items-center">
+        <input type="checkbox" id="Salad"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Salad" class="text-sm font-normal text-gray-700">Salad</label>
+      </li>
+    </ul>
+  </li>
+    <!-- Main Category Template -->
+  <li>
+    <label class="flex items-center font-semibold">
+      <input type="checkbox" id="Meat & Seafood"
+        class="w-5 h-5 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        Meat & Seafood
+    </label>
+    <!-- Sub -->
+    <ul class="ml-6 mt-2 space-y-2 border-l border-gray-200/70 pl-4">
+      <li class="flex items-center">
+        <input type="checkbox" id="Meat"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Meat" class="text-sm font-normal text-gray-700">Meat</label>
+      </li>
+      <li class="flex items-center">
+        <input type="checkbox" id="Seafood"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Seafood" class="text-sm font-normal text-gray-700">Seafood</label>
+      </li>
+    </ul>
+  </li>
+   <!-- Main Category Template -->
+   <li>
+    <label class="flex items-center font-semibold">
+      <input type="checkbox" id="Dairy & Egg"
+        class="w-5 h-5 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        Dairy & Egg
+    </label>
+    <!-- Sub -->
+    <ul class="ml-6 mt-2 space-y-2 border-l border-gray-200/70 pl-4">
+      <li class="flex items-center">
+        <input type="checkbox" id="Milk"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Milk" class="text-sm font-normal text-gray-700">Milk</label>
+      </li>
+      <li class="flex items-center">
+        <input type="checkbox" id="Egg"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Egg" class="text-sm font-normal text-gray-700">Egg</label>
+      </li>
+    </ul>
+  </li>
+  <!-- Main Category Template -->
+  <li>
+    <label class="flex items-center font-semibold">
+      <input type="checkbox" id="Snack & Drink"
+        class="w-5 h-5 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        Snack & Drink
+    </label>
+    <!-- Sub -->
+    <ul class="ml-6 mt-2 space-y-2 border-l border-gray-200/70 pl-4">
+      <li class="flex items-center">
+        <input type="checkbox" id="Snack"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Snack" class="text-sm font-normal text-gray-700">Snack</label>
+      </li>
+      <li class="flex items-center">
+        <input type="checkbox" id="Drink"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Drink" class="text-sm font-normal text-gray-700">Drink</label>
+      </li>
+    </ul>
+  </li>
+  <!-- Main Category Template -->
+  <li>
+    <label class="flex items-center font-semibold">
+      <input type="checkbox" id="Health & Wellness"
+        class="w-5 h-5 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        Health & Wellness
+    </label>
+    <!-- Sub -->
+    <ul class="ml-6 mt-2 space-y-2 border-l border-gray-200/70 pl-4">
+      <li class="flex items-center">
+        <input type="checkbox" id="Health"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Health" class="text-sm font-normal text-gray-700">Health</label>
+      </li>
+      <li class="flex items-center">
+        <input type="checkbox" id="Wellness"
+          class="w-4 h-4 mr-2 border-gray-200/70 rounded text-green-600 focus:ring-green-500">
+        <label for="Wellness" class="text-sm font-normal text-gray-700">Drink</label>
+      </li>
+    </ul>
+  </li>
+</ul>
+</div>
+          </div>
+        </div>
+
+
+      </div>
+      <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4" id="product-layout">
+        </form>
+      </div>
+  </section>
+</body>
+<script src="./js/template.js"></script>
+<script src="./js/script.js"> </script>
+<script src="js/modal.js"></script>
+
+</html>

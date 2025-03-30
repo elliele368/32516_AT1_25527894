@@ -1,0 +1,243 @@
+let selectedProductIndex = 0;  // Track the selected product's index
+let modalQty = 1;             // Modal quantity counter (initial set to 1)
+
+// Thêm hàm bay "flyToCartAnimation"
+function flyToCartAnimation(product, startX, startY, endX, endY) {
+  // Tạo 1 element (img) đại diện sản phẩm
+  const flyer = document.createElement('img');
+  flyer.src = product.image;              // Lấy ảnh của product
+  flyer.style.position = 'fixed';
+  flyer.style.left = startX + 'px';
+  flyer.style.top = startY + 'px';
+  flyer.style.width = '50px';
+  flyer.style.height = '50px';
+  flyer.style.zIndex = '9999';
+  flyer.style.transition = 'all 0.8s ease';
+
+  // Thêm vào body
+  document.body.appendChild(flyer);
+
+  // Bắt buộc reflow để transition hoạt động
+  flyer.offsetWidth; // force reflow
+
+  // Di chuyển đến icon giỏ hàng
+  flyer.style.left = endX + 'px';
+  flyer.style.top = endY + 'px';
+  flyer.style.width = '10px';
+  flyer.style.height = '10px';
+  flyer.style.opacity = '0.5';
+
+  // Khi bay xong thì xoá phần tử
+  flyer.addEventListener('transitionend', () => {
+    flyer.remove();
+  });
+}
+
+// Mở modal
+function openProductModal(product, index) {
+  const modal = document.getElementById("productDetail-modal");
+  const content = document.getElementById("modalContent");
+  const scrollPosition = window.scrollY;
+
+  selectedProductIndex = index;
+  modalQty = 1;
+
+  modal.classList.remove("hidden");
+  document.body.classList.add('modal-open');
+  document.body.style.top = `-${scrollPosition}px`;
+  document.body.style.position = 'fixed';
+
+  // Render modal content
+  content.innerHTML = `
+    <div class="flex flex-col md:flex-row gap-6">
+      <!-- Image -->
+      <div class="w-full md:w-1/2">
+        <img src="${product.image}" alt="${product.name}" class="w-full h-full object-cover rounded-lg" />
+      </div>
+
+      <!-- Info -->
+      <div class="w-full md:w-1/2 flex flex-col gap-4">
+        <div>
+          <h2 class="text-2xl font-bold text-gray-900 mb-2">${product.name}</h2>
+          <p class="text-xl font-bold text-green-700">$${product.price.toFixed(2)}</p>
+          <p id="model-qty" class=" text-sm text-gray-500 mt-1">
+            (${product.displayUnit} / QTY: ${product.quantity})
+          </p>
+        </div>
+
+        <div class="bg-green-50 p-4 rounded-lg">
+          <p class="font-semibold text-gray-800 mb-1">Description</p>
+          <p class="text-sm text-gray-700 leading-relaxed">${product.description}</p>
+        </div>
+
+        <!-- Quantity + Button -->
+        <div class="flex items-center gap-4 mt-4">
+          <div class="flex h-[40px] overflow-hidden rounded-lg border border-gray-300 text-gray-900 w-1/3">
+            <button class="w-[44px] bg-gray-500 text-white hover:bg-green-700 flex items-center justify-center"
+                    id="decrease-btn-${product.id}" disabled>
+              <span class="text-xl leading-none">−</span>
+            </button>
+            <div class="flex grow items-center justify-center bg-gray-50 text-base font-medium px-4">
+              <span id="qty-display-${product.id}">1</span>
+            </div>
+            <button class="w-[44px] bg-green-600 text-white hover:bg-green-700 flex items-center justify-center"
+                    id="increase-btn-${product.id}">
+              <span class="text-xl leading-none">+</span>
+            </button>
+          </div>
+
+          <span class="text-gray-500">|</span> <!-- separator -->
+
+          <button class="h-[40px] rounded-lg bg-green-600 px-5 text-sm font-medium text-white hover:bg-green-800
+                         focus:outline-none focus:ring-4 focus:ring-green-300 w-2/3"
+                  id="add-to-cart-btn-${product.id}">
+            Add to cart
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  // Khởi tạo sự kiện trong modal
+  initializeModalEvents(product, index);
+}
+
+// Đóng modal
+function closeProductModal() {
+  const modal = document.getElementById("productDetail-modal");
+  const scrollPosition = Math.abs(parseInt(document.body.style.top || '0'));
+
+  modal.classList.add("hidden");
+  document.body.classList.remove('modal-open');
+  document.body.style.position = '';
+  document.body.style.top = '';
+
+  // Restore scroll position
+  window.scrollTo(0, scrollPosition);
+}
+
+// Gắn sự kiện đóng modal cho nút và cho vùng overlay
+document.getElementById("closeModalButton").addEventListener("click", closeProductModal);
+document.getElementById("productDetail-modal").addEventListener("click", (event) => {
+  if (event.target === document.getElementById("productDetail-modal")) {
+    closeProductModal();
+  }
+});
+
+// Hàm khởi tạo sự kiện trong modal (sửa lại đoạn Add to cart)
+function initializeModalEvents(product, index) {
+    const decreaseBtn = document.getElementById(`decrease-btn-${product.id}`);
+    const increaseBtn = document.getElementById(`increase-btn-${product.id}`);
+    const addToCartBtn = document.getElementById(`add-to-cart-btn-${product.id}`);
+    const qtyDisplay = document.getElementById(`qty-display-${product.id}`);
+  
+    // Khi modal mở, set nút ban đầu
+    updateModalButtonState(product, decreaseBtn, increaseBtn, addToCartBtn, qtyDisplay);
+
+  // Giảm số lượng
+  decreaseBtn.addEventListener("click", () => {
+    if (modalQty > 1) {
+      modalQty--;
+      qtyDisplay.textContent = modalQty;
+      updateModalButtonState(product, decreaseBtn, increaseBtn, addToCartBtn, qtyDisplay);
+    }
+  });
+
+  // Tăng số lượng
+  increaseBtn.addEventListener("click", () => {
+    if (modalQty < product.quantity) {
+      modalQty++;
+      qtyDisplay.textContent = modalQty;
+      updateModalButtonState(product, decreaseBtn, increaseBtn, addToCartBtn, qtyDisplay);
+    }
+  });
+
+  // Thêm vào giỏ
+  addToCartBtn.addEventListener("click", () => {
+    if (product.quantity >= modalQty) {
+      // Trừ stock, tăng cartCount
+      product.quantity -= modalQty;
+      cartCount += modalQty;
+      updateCartDisplay();
+      updateProductCardStock(index);
+
+      // Giữ modal mở (không close)
+      // closeProductModal();
+
+      // Cập nhật text hiển thị còn lại
+      document.getElementById("model-qty").textContent = `(${product.displayUnit} / QTY: ${product.quantity})`;
+      updateModalButtonState(product, decreaseBtn, increaseBtn, addToCartBtn, qtyDisplay);
+
+      // Tính toạ độ bắt đầu (nút Add to cart trong modal)
+      const addBtnRect = addToCartBtn.getBoundingClientRect();
+      const startX = addBtnRect.left + window.scrollX + (addBtnRect.width / 2);
+      const startY = addBtnRect.top + window.scrollY + (addBtnRect.height / 2);
+
+      // Tính toạ độ kết thúc (icon giỏ hàng)
+      const cartIcon = document.getElementById('cartIcon');
+      const cartRect = cartIcon.getBoundingClientRect();
+      const endX = cartRect.left + window.scrollX + (cartRect.width / 2);
+      const endY = cartRect.top + window.scrollY + (cartRect.height / 2);
+
+      // Gọi hàm bay
+      flyToCartAnimation(product, startX, startY, endX, endY);
+    }
+  });
+}
+
+// Cập nhật trạng thái nút trong modal
+function updateModalButtonState(product, decreaseBtn, increaseBtn, addToCartBtn, qtyDisplay) {
+  // Disable decrease nếu đang là 1
+  if (modalQty === 1) {
+    decreaseBtn.disabled = true;
+    decreaseBtn.classList.add('opacity-50', 'bg-gray-500', 'cursor-not-allowed');
+    decreaseBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+  } else {
+    decreaseBtn.disabled = false;
+    decreaseBtn.classList.remove('opacity-50', 'bg-gray-500', 'cursor-not-allowed');
+    decreaseBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+  }
+
+  // Disable increase nếu đạt max stock
+  if (modalQty >= product.quantity) {
+    increaseBtn.disabled = true;
+    increaseBtn.classList.add('opacity-50', 'bg-gray-500', 'cursor-not-allowed');
+    increaseBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+  } else {
+    increaseBtn.disabled = false;
+    increaseBtn.classList.remove('opacity-50', 'bg-gray-500', 'cursor-not-allowed');
+    increaseBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+  }
+
+  // Nếu out of stock => disable tất cả
+  if (product.quantity === 0) {
+    decreaseBtn.disabled = true;
+    increaseBtn.disabled = true;
+    addToCartBtn.disabled = true;
+    addToCartBtn.textContent = 'Out of stock';
+    addToCartBtn.classList.add('opacity-50', 'bg-gray-500', 'cursor-not-allowed');
+    addToCartBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+  }
+}
+
+// Cập nhật thẻ product card ngoài danh sách
+function updateProductCardStock(index) {
+  const product = products[index];
+  const productCard = document.getElementById(`product-${product.id}`);
+  if (!productCard) return;
+
+  // Nếu hết hàng => đổi nút thành "Out of stock"
+  if (product.quantity === 0) {
+    const addBtn = productCard.querySelector('.addButton');
+    addBtn.disabled = true;
+    addBtn.textContent = 'Out of stock';
+
+    // Đổi màu sang xám
+    addBtn.classList.add('bg-gray-500', 'text-white', 'cursor-not-allowed', 'opacity-50');
+    addBtn.classList.remove('bg-green-600', 'hover:bg-green-800', 'hover:bg-green-700');
+  }
+
+  // Luôn cập nhật text QTY
+  const quantityEl = productCard.querySelector('.product-quantity');
+  quantityEl.textContent = `(${product.displayUnit} / QTY: ${product.quantity})`;
+}

@@ -1,0 +1,81 @@
+/* Áp dụng cho toàn bộ trang */
+html, body {
+  overflow-y: scroll; /* Đảm bảo luôn có khả năng cuộn dọc */
+  -ms-overflow-style: none; /* Ẩn scrollbar trên IE và Edge */
+  scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+}
+
+/* Ẩn scrollbar trên Chrome, Safari và các trình duyệt dựa trên Webkit */
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+  display: none; /* Ẩn thanh cuộn */
+}
+
+.category-svg {
+    width: 90%;
+    height: 90%;
+}
+.rotate-180 {
+    transform: rotate(180deg);
+    transition: transform 0.2s ease;
+  }
+
+#productDetail-modal .modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  max-width: 800px;
+  max-height: 90vh;
+  margin: 0 auto;
+}
+
+#productDetail-modal .modal-content img {
+  object-fit: cover; /* Maintain aspect ratio while filling the space */
+  width: 100%;
+  height: 100%;
+  max-height: 400px; /* Control the max height to keep it proportional */
+}
+
+#productDetail-modal .modal-content h2 {
+  font-size: 1.25rem;
+  color: #2d3748;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+/* Hide scrollbar but still allow scrolling */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
+/* Optionally hide the scrollbar UI */
+body.modal-open::-webkit-scrollbar {
+  display: none; /* Hides the scrollbar */
+}
+
+/* Ensure modal covers the whole screen */
+#productDetail-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000; /* Ensure it's on top */
+  overflow-y: auto; /* Allow scrolling within the modal if needed */
+}
+
+  /* For mobile responsiveness */
+  @media (max-width: 768px) {
+    .modal-content {
+      width: 90%;
+      max-width: 100%;
+    }
+    .modal img {
+      max-width: 100%;
+      height: auto;
+    }
+  }
