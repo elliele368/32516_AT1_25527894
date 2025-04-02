@@ -79,3 +79,41 @@ body.modal-open::-webkit-scrollbar {
       height: auto;
     }
   }
+
+.tooltip-hover[data-tooltip] {
+  position: relative;
+}
+.tooltip-hover[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-100%, -50%);
+  background-color: #4B4A3F;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 20;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.tooltip-hover[data-tooltip]::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -6px;
+  transform: translateY(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: transparent #4B4A3F transparent transparent;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.tooltip-hover:hover::after,
+.tooltip-hover:hover::before {
+  opacity: 1;
+}

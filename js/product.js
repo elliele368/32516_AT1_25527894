@@ -1,6 +1,6 @@
 let productsInit =  [{
     id : 1,
-    image: "./images/dietary-salad.jpg",
+    image: "./images/dietary-salad.webp",
     price: 5.00,
     quantity: 5,
     name: "Lettuce Iceberg Shredded Lettuce 200g",
@@ -9,7 +9,7 @@ let productsInit =  [{
     description: "Fresh, crisp, and ready to use—perfect for salads, burgers, and wraps. Pre-washed for convenience. Keep refrigerated.",
 },{
     id :2,
-    image: "./images/cooked-salmon.jpg",
+    image: "./images/cooked-salmon.webp",
     price: 10.20,
     quantity: 3,
     name: "Cooked Seafood Salmon Skin On 250g",
@@ -19,7 +19,7 @@ let productsInit =  [{
 }
 ,{
     id : 3,
-    image: "./images/baby-spinach.jpg",
+    image: "./images/baby-spinach.webp",
     price: 2.80,
     quantity: 8,
     name: "Baby Spinach & Rocket 120g",
@@ -28,7 +28,7 @@ let productsInit =  [{
     description: "A fresh, leafy mix of baby spinach and rocket. Washed and ready to eat—great for salads, wraps, or smoothies. Keep refrigerated.",
 },{
     id :4,
-    image: "./images/champagne-leg-ham.jpg",
+    image: "./images/champagne-leg-ham.webp",
     price: 21.00,
     quantity: 0,
     name: "Champagne Leg Ham Shaved From The Deli",
@@ -37,7 +37,7 @@ let productsInit =  [{
     description: "Delicately shaved Champagne leg ham, tender and full of flavour. Ideal for sandwiches, platters, or salads. Keep refrigerated.",
 },{
     id :5,
-    image: "./images/thin-bbq-sausage.jpg",
+    image: "./images/thin-bbq-sausage.webp",
     price: 11.50,
     quantity: 5,
     name: "Market Value 26 Thin BBQ Sausages 1.8kg",
@@ -55,7 +55,7 @@ let productsInit =  [{
     description: "A refreshing daily probiotic drink containing beneficial bacteria that help support digestive and gut health. Made with Yakult’s unique strain of Lactobacillus casei Shirota, it’s a tasty way to care for your wellbeing.  Enjoy one bottle a day as part of a balanced lifestyle. Keep refrigerated.",
 },{
     id :7,
-    image: "./images/parmesan-cheese.jpg",
+    image: "./images/parmesan-cheese.webp",
     price: 2.00,
     quantity: 12,
     name: "Essentials Parmesan Cheese 100g",
@@ -64,7 +64,7 @@ let productsInit =  [{
     description: "Finely grated Parmesan cheese, perfect for pasta, salads, and cooking. Rich, savory flavour. Keep refrigerated.",
 },{
     id :8,
-    image: "./images/steak-butter.jpg",
+    image: "./images/steak-butter.webp",
     price: 16.00,
     quantity: 12,
     name: "Beef Porterhouse Steak & Butter 400g",
@@ -73,7 +73,7 @@ let productsInit =  [{
     description: "Tender porterhouse steak paired with seasoned butter for extra flavour. Ready to cook—perfect for a hearty meal.",
 },{
     id :9,
-    image: "./images/tiger-prawns.jpg",
+    image: "./images/tiger-prawns.webp",
     price: 25.60,
     quantity: 10,
     name: "Thawed Extra Large Cooked Tiger Prawns",
@@ -82,7 +82,7 @@ let productsInit =  [{
     description: "Juicy and succulent, these extra large tiger prawns are cooked and ready to enjoy. Ideal for salads or seafood dishes."
 },{
     id :10,
-    image: "./images/peeled-deveined-raw-prawns.jpg",
+    image: "./images/peeled-deveined-raw-prawns.webp",
     price: 27.00,
     quantity: 8,
     name: "Just Caught Peeled & Deveined Raw Prawns",
@@ -91,7 +91,7 @@ let productsInit =  [{
     description: "Fresh and ready to cook, these peeled and deveined raw prawns are perfect for stir-fries, pastas, or grills.",
 },{
     id :11,
-    image: "./images/mayonnaise-whole-egg.jpg",
+    image: "./images/mayonnaise-whole-egg.webp",
     price: 7.00,
     quantity: 12,
     name: "Mayonnaise Whole Egg 440g",
@@ -109,7 +109,7 @@ let productsInit =  [{
     description: "Farm-fresh extra large free range eggs with rich flavour and quality you can trust. Ideal for all your cooking.",
 },{
     id : 13,
-    image: "./images/white-seedless-grapes.jpg",
+    image: "./images/white-seedless-grapes.webp",
     price: 3.60,
     quantity: 8,
     name: "White Seedless Grapes Bag Approx. 900g each",
@@ -118,7 +118,7 @@ let productsInit =  [{
     description: "Sweet, crisp, and juicy white seedless grapes. Perfect for snacking, lunchboxes, or fruit platters.",
 },{
     id : 14,
-    image: "./images/fresh-apples-punnet.jpg",
+    image: "./images/fresh-apples-punnet.webp",
     price: 5.50,
     quantity: 10,
     name: "Fresh Apples Punnet 1kg",
@@ -127,7 +127,7 @@ let productsInit =  [{
     description: "Crisp, juicy apples packed for convenience. Great for snacking, baking, or lunchboxes. Store in a cool place.",
 },{
     id : 15,
-    image: "./images/cherry-tomatoes-punnet.jpg",
+    image: "./images/cherry-tomatoes-punnet.webp",
     price: 3.20,
     quantity: 10,
     name: "Cherry Tomatoes Punnet 250g",
@@ -136,7 +136,7 @@ let productsInit =  [{
     description: "Sweet and juicy cherry tomatoes, perfect for salads, snacking, or roasting. Washed and ready to enjoy.",
 },{
     id : 16,
-    image: "./images/potato-chips.jpg",
+    image: "./images/potato-chips.webp",
     price: 3.00,
     quantity: 20,
     name: "Potato Chips Honey Soy Chicken 165g",
@@ -145,7 +145,7 @@ let productsInit =  [{
     description: "Crispy chips with a sweet and savoury honey soy chicken flavour. Perfect for snacking or sharing.",
 },{
     id : 17,
-    image: "./images/gluten-free-popcorn.jpg",
+    image: "./images/gluten-free-popcorn.webp",
     price: 2.70,
     quantity: 16,
     name: "Gluten Free Popcorn 10 Pack",
@@ -154,7 +154,7 @@ let productsInit =  [{
     description: "Light, crunchy, and gluten free—perfect for lunchboxes, or movie nights. Convenient 10-pack for on-the-go enjoyment.",
 },{
     id : 18,
-    image: "./images/coca-cola.jpg",
+    image: "./images/coca-cola.webp",
     price: 2.00,
     quantity: 10,
     name: "Coca-Cola Classic Soft Drink Bottle 1.25l",
@@ -163,7 +163,7 @@ let productsInit =  [{
     description: "The original, refreshing cola taste you love. Perfect for sharing or enjoying anytime. Serve chilled.",
 },{
     id : 19,
-    image: "./images/protein-snack-bar.jpg",
+    image: "./images/protein-snack-bar.webp",
     price: 12.00,
     quantity: 5,
     name: "Protein Snack Bar Cookies & Cream 6 packs",
@@ -172,7 +172,7 @@ let productsInit =  [{
     description: "Delicious cookies & cream flavour protein bars—great for on-the-go energy, or a tasty snack.",
 },{
     id : 20,
-    image: "./images/traditional-raspberry-drink.jpg",
+    image: "./images/traditional-raspberry-drink.webp",
     price: 3.00,
     quantity: 10,
     name: "Traditional Raspberry Soft Drink Bottle 1.1l",
@@ -181,7 +181,7 @@ let productsInit =  [{
     description: "Sweet and fizzy raspberry-flavoured soft drink. A classic treat for any occasion. Serve chilled.",
 },{
     id : 21,
-    image: "./images/breakfast-cereal.jpg",
+    image: "./images/breakfast-cereal.webp",
     price: 4.60,
     quantity: 5,
     name: "Gluten Free Breakfast Cereal 375g",
@@ -190,7 +190,7 @@ let productsInit =  [{
     description: "A crunchy and wholesome gluten free cereal, perfect for a nourishing start to your day. Enjoy with milk or yogurt.",
 },{
     id : 22,
-    image: "./images/medical-pills.jpg",
+    image: "./images/medical-pills.webp",
     price: 4.50,
     quantity: 0,
     name: "Mini Caps For Pain Relief Paracetamol 500mg 16 pack",

@@ -4,7 +4,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="https://unpkg.com/flowbite@1.6.6/dist/flowbite.min.js"></script>
   <script src="./js/product.js"></script>
   <script src="js/category.js"></script>
@@ -17,9 +16,9 @@
   <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-gray-200 px-4 lg:px-6 py-2.5 border-b border-gray-200"
     style="box-shadow: 0px 4px 8px 0px #0A1A280A;">
     <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-      <a href="https://flowbite.com" class="flex items-center">
+      <a href="./index.html" class="flex items-center">
         <!-- remember to change link -->
-        <img src="images/logo-grocery-1.png" class="mr-3 h-6 sm:h-9" alt="Flowbite Logo" />
+        <img src="images/logo-grocery-1.webp" class="mr-3 h-6 sm:h-9" alt="Flowbite Logo" />
         <span class="self-center text-xl font-semibold text-green-700 whitespace-nowrap">Green</span>
         <span class="self-center text-xl font-semibold text-green-500 whitespace-nowrap">Mart</span>
       </a>
@@ -44,7 +43,9 @@
           </div>
         </form>
         <!-- Cart icon -->
-        <button type="button" id="cartIcon"
+  <a href="./cart.html" class="flex items-center">
+
+        <div type="button" id="cartIcon"
   class="relative inline-flex items-center p-2 text-sm font-medium text-center border border-green-700/30 text-green-600 bg-green-50 rounded-full hover:bg-green-200 focus:ring-4 focus:outline-none focus:ring-green-400">
   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
     <path fill="currentColor"
@@ -55,10 +56,11 @@
     class="absolute inline-flex items-center justify-center w-5 h-5 font-semibold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 text-[10px]">
     0
   </div>
-</button>
+</div></a>
       </div>
     </div>
   </nav>
+
 
   <!-- Modal placeholder -->
   <div id="productDetail-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
@@ -71,7 +73,7 @@
   
   <!-- Horizontal banner -->
 <section class="relative bg-cover bg-center bg-no-repeat w-full h-[280px] md:h-[280px] pt-8"
-style="background-image: url('/images/banner-2.png');">
+style="background-image: url('/images/banner-2.webp');">
 <div class="absolute inset-0 bg-black/20"></div>
 <div class="relative z-10 max-w-screen-xl mx-auto h-full px-6 flex items-center">
   <div class="text-white max-w-xl space-y-4">
@@ -95,8 +97,7 @@ style="background-image: url('/images/banner-2.png');">
       <p class="text-sm text-gray-400 mt-1">Explore fresh picks for every lifestyle. Carefully selected and delivered to
         your door.</p>
     </div>
-    <div id="category-layout" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-6">
-      </div>
+    <div id="category-layout" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 mb-6 items-stretch">
   </section>
   <!-- Product list -->
   <section class="bg-gray-50 py-4 antialiased md:py-4">
@@ -235,6 +236,8 @@ Filter by category
       </div>
   </section>
 </body>
+<script src="./tailwindcss/tailwindcss.js"></script>
+
 <script src="./js/template.js"></script>
 <script src="./js/script.js"> </script>
 <script src="js/modal.js"></script>
