@@ -33,6 +33,16 @@ function flyToCartAnimation(product, startX, startY, endX, endY) {
   });
 }
 
+// Reference to updateCartData from script.js
+function updateCartData() {
+  let cartList = producChose
+    .filter((product) => product.quantity > 0)
+    .map(({ id, quantity }) => ({ id, quantity }));
+  
+  localStorage.setItem("cartProduct", JSON.stringify(cartList));
+  updateCartBadgeFromStorage(); // Update badge whenever cart data changes
+}
+
 // Mở modal
 function openProductModal(product, index) {
   const modal = document.getElementById("productDetail-modal");
@@ -161,8 +171,22 @@ function initializeModalEvents(product, index) {
       updateCartDisplay();
       updateProductCardStock(index);
 
-      // Giữ modal mở (không close)
-      // closeProductModal();
+      // Add this section to update cart data
+      // Find if product exists in cart
+      let cartItemIndex = producChose.findIndex(item => item.id === product.id);
+      if (cartItemIndex !== -1) {
+        // If exists, increase its quantity
+        producChose[cartItemIndex].quantity += modalQty;
+      } else {
+        // If not exists, add it
+        producChose.push({
+          id: product.id,
+          quantity: modalQty
+        });
+      }
+      
+      // Update localStorage
+      updateCartData();
 
       // Cập nhật text hiển thị còn lại
       document.getElementById("model-qty").textContent = `(${product.displayUnit} / QTY: ${product.quantity})`;

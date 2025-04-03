@@ -9,7 +9,32 @@
   <script src="js/category.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <link rel="stylesheet" href="./css/style.css">
-  <title>Document</title>
+  <title>GreenMart - Fresh Organic Produce</title>
+  <!-- Add this style to ensure logo is properly sized from the start -->
+  <style>
+    /* Prevent logo flashing by setting maximum dimensions immediately */
+    img.mr-3.h-6.sm\:h-9 {
+      max-height: 36px;
+      width: auto;
+      object-fit: contain;
+    }
+    
+    /* Hide the body until fully loaded to prevent flash of unstyled content */
+    .preload {
+      overflow: hidden;
+    }
+    
+    .preload * {
+      transition: none !important;
+    }
+  </style>
+  <script>
+    // Add preload class to body and remove it when the page loads
+    document.documentElement.classList.add('preload');
+    window.addEventListener('load', function() {
+      document.documentElement.classList.remove('preload');
+    });
+  </script>
 </head>
 
 <body>
@@ -241,5 +266,6 @@ Filter by category
 <script src="./js/template.js"></script>
 <script src="./js/script.js"> </script>
 <script src="js/modal.js"></script>
+<script src="./js/cart-utils.js"></script>
 
 </html>

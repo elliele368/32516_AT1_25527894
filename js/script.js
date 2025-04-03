@@ -2,11 +2,46 @@ let quantity = [];
 let hasReserved = [];
 let producChose = [];
 let cartCount = 0; // Total number of products in the cart
+// let cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
+let cartData;
+try {
+  cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
+} catch (e) {
+  // Nếu parse lỗi, dùng productsInit làm mặc định
+  cartData = [];
+}
 
 // Update Cart Display
 function updateCartDisplay() {
   const cartBadge = document.getElementById('cart-count');
   cartBadge.textContent = cartCount;
+}
+
+// Add this function to calculate and update the cart badge
+function updateCartBadgeFromStorage() {
+  try {
+    const storedCart = localStorage.getItem("cartProduct");
+    if (!storedCart) {
+      document.getElementById("cart-count").textContent = "0";
+      return;
+    }
+    
+    const cartItems = JSON.parse(storedCart);
+    
+    // Calculate total quantity in cart
+    const totalItems = cartItems.reduce((sum, item) => {
+      return sum + (item.quantity || 0);
+    }, 0);
+    
+    // Update the cart badge
+    document.getElementById("cart-count").textContent = totalItems;
+    
+    // Also update our cartCount variable to keep things in sync
+    cartCount = totalItems;
+  } catch (e) {
+    console.error("Error updating cart badge:", e);
+    document.getElementById("cart-count").textContent = "0";
+  }
 }
 
 function initRenderProduct() {
@@ -23,9 +58,11 @@ function initEvents() {
     document.getElementsByClassName("plusBtn")[i].addEventListener("click", increaseQty.bind(null, i));
     quantity.push(1);
     hasReserved.push(false);
+    let foundItem = cartData.find(item => item.id === products[i].id);
+    products[i].quantity = foundItem ? products[i].quantity - foundItem.quantity : products[i].quantity;
     producChose.push({
       id: products[i].id,
-      quantity: 0
+      quantity: foundItem ? foundItem.quantity : 0
     });
     updateAddButtonState(i);
   }
@@ -36,6 +73,7 @@ window.onload = function () {
   initRenderProduct();
   renderCategories(); // Assuming this function exists for rendering categories
   initEvents(); // Initialize events for products
+  updateCartBadgeFromStorage(); // Update the cart badge on page load
 };
 
 // Toggle dropdown for categories
@@ -159,6 +197,7 @@ function updateQtyDisplay(index) {
 function updateStockDisplay(index) {
   const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${products[index].quantity}` : `QTY: ${products[index].quantity}`;
   document.getElementsByClassName('product-quantity')[index].textContent = `(${unitInfo})`;
+ this.updateCartData();
 }
 
 function updateAddButtonState(index) {
@@ -247,3 +286,15 @@ function filterByTags(selectedTags) {
   );
 }
 
+function updateCartData(){
+  let cartList = producChose
+  .filter((product) => product.quantity > 0)
+  .map(({ id, quantity }) => ({ id, quantity }));
+ 
+  localStorage.setItem("cartProduct", JSON.stringify(cartList));
+  updateCartBadgeFromStorage(); // Update badge whenever cart data changes
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  updateCartBadgeFromStorage();
+});
