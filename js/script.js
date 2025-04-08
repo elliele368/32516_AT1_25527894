@@ -13,49 +13,36 @@ try {
 
 // Update Cart Display
 function updateCartDisplay() {
-  const cartBadge = document.getElementById('cart-count');
-  cartBadge.textContent = cartCount;
-}
-
-// Add this function to calculate and update the cart badge
-function updateCartBadgeFromStorage() {
-  try {
-    const storedCart = localStorage.getItem("cartProduct");
-    if (!storedCart) {
-      document.getElementById("cart-count").textContent = "0";
-      return;
-    }
-    
-    const cartItems = JSON.parse(storedCart);
-    
-    // Calculate total quantity in cart
-    const totalItems = cartItems.reduce((sum, item) => {
-      return sum + (item.quantity || 0);
-    }, 0);
-    
-    // Update the cart badge
-    document.getElementById("cart-count").textContent = totalItems;
-    
-    // Also update our cartCount variable to keep things in sync
-    cartCount = totalItems;
-  } catch (e) {
-    console.error("Error updating cart badge:", e);
-    document.getElementById("cart-count").textContent = "0";
-  }
+  updateCartBadge(); // Use the centralized function
 }
 
 function initRenderProduct() {
+  const productLayout = document.getElementById("product-layout");
+  if (!productLayout) {
+    // Trang hiện tại không có product-layout, không cần render
+    return;
+  }
+
   for (let i = 0; i < products.length; i++) {
-    document.getElementById("product-layout").innerHTML += renderTemplate(products[i], i);
+    productLayout.innerHTML += renderTemplate(products[i], i);
   }
 }
 
 function initEvents() {
   for (let i = 0; i < products.length; i++) {
-    // Initialize modal button events for each product
-    document.getElementsByClassName("decreaseBtn")[i].addEventListener("click", decreaseQty.bind(null, i));
-    document.getElementsByClassName("addButton")[i].addEventListener("click", showQuantityCounter.bind(null, i));
-    document.getElementsByClassName("plusBtn")[i].addEventListener("click", increaseQty.bind(null, i));
+    const decreaseBtn = document.getElementsByClassName("decreaseBtn")[i];
+    const addButton = document.getElementsByClassName("addButton")[i];
+    const plusBtn = document.getElementsByClassName("plusBtn")[i];
+
+    if (decreaseBtn && addButton && plusBtn) {
+      decreaseBtn.addEventListener("click", decreaseQty.bind(null, i));
+      addButton.addEventListener("click", showQuantityCounter.bind(null, i));
+      plusBtn.addEventListener("click", increaseQty.bind(null, i));
+    } else {
+      console.warn(`⚠️ Some buttons not found for product index ${i}`);
+      continue;
+    }
+
     quantity.push(1);
     hasReserved.push(false);
     let foundItem = cartData.find(item => item.id === products[i].id);
@@ -71,9 +58,11 @@ function initEvents() {
 // Load Product Cards
 window.onload = function () {
   initRenderProduct();
-  renderCategories(); // Assuming this function exists for rendering categories
+  if (typeof renderCategories === "function" && document.getElementById("category-layout")) {
+    renderCategories(); // Only call if it's defined and used on this page
+  }
   initEvents(); // Initialize events for products
-  updateCartBadgeFromStorage(); // Update the cart badge on page load
+  updateCartBadge(); // Update the cart badge on page load
 };
 
 // Toggle dropdown for categories
@@ -120,7 +109,12 @@ function showQuantityCounter(index) {
   hasReserved[index] = true;
   updateQtyDisplay(index);
   updateStockDisplay(index);
-  updateCartDisplay(); // Update cart UI
+  
+  if (document.getElementById('cart-count')) {
+    updateCartDisplay(); // Update cart UI
+  } else {
+    console.warn("Cart badge not found in showQuantityCounter.");
+  }
 
   document.getElementsByClassName('addButton')[index].classList.add('hidden');
   document.getElementsByClassName('quantitySelector')[index].classList.remove('hidden');
@@ -142,7 +136,10 @@ function increaseQty(index) {
     cartCount++;
     updateQtyDisplay(index);
     updateStockDisplay(index);
-    updateCartDisplay();
+    
+    if (document.getElementById('cart-count')) {
+      updateCartDisplay();
+    }
   }
 
   if (products[index].quantity <= 0) {
@@ -162,7 +159,10 @@ function decreaseQty(index) {
     cartCount--;
     updateQtyDisplay(index);
     updateStockDisplay(index);
-    updateCartDisplay();
+    
+    if (document.getElementById('cart-count')) {
+      updateCartDisplay();
+    }
 
     if (products[index].quantity > 0) {
       plusBtn.disabled = false;
@@ -177,7 +177,10 @@ function decreaseQty(index) {
       cartCount--;
       hasReserved[index] = false;
       updateStockDisplay(index);
-      updateCartDisplay();
+      
+      if (document.getElementById('cart-count')) {
+        updateCartDisplay();
+      }
     }
 
     document.getElementsByClassName('quantitySelector')[index].classList.add('hidden');
@@ -197,7 +200,7 @@ function updateQtyDisplay(index) {
 function updateStockDisplay(index) {
   const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${products[index].quantity}` : `QTY: ${products[index].quantity}`;
   document.getElementsByClassName('product-quantity')[index].textContent = `(${unitInfo})`;
- this.updateCartData();
+  this.updateCartData();
 }
 
 function updateAddButtonState(index) {
@@ -288,13 +291,12 @@ function filterByTags(selectedTags) {
 
 function updateCartData(){
   let cartList = producChose
-  .filter((product) => product.quantity > 0)
-  .map(({ id, quantity }) => ({ id, quantity }));
+    .filter((product) => product.quantity > 0)
+    .map(({ id, quantity }) => ({ id, quantity }));
  
   localStorage.setItem("cartProduct", JSON.stringify(cartList));
-  updateCartBadgeFromStorage(); // Update badge whenever cart data changes
+  updateCartBadge(); // Use the centralized function
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  updateCartBadgeFromStorage();
 });

@@ -38,54 +38,7 @@
 </head>
 
 <body>
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-gray-200 px-4 lg:px-6 py-2.5 border-b border-gray-200"
-    style="box-shadow: 0px 4px 8px 0px #0A1A280A;">
-    <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-      <a href="./index.html" class="flex items-center">
-        <!-- remember to change link -->
-        <img src="images/logo-grocery-1.webp" class="mr-3 h-6 sm:h-9" alt="Flowbite Logo" />
-        <span class="self-center text-xl font-semibold text-green-700 whitespace-nowrap">Green</span>
-        <span class="self-center text-xl font-semibold text-green-500 whitespace-nowrap">Mart</span>
-      </a>
-      <div class="flex items-center space-x-4">
-        <!-- Search form -->
-        <form class="w-[350px]">
-          <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 bg-green-50 sr-only">Search</label>
-          <div class="flex items-center border border-green-700/30 rounded-lg bg-green-50 px-2">
-            <svg class="w-5 h-5 text-gray-500 me-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
-              viewBox="0 0 20 20">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-            </svg>
-            <input type="search" id="default-search"
-              class="flex-grow p-2 text-sm text-gray-900 bg-gray-50 focus:outline-none focus:ring-0"
-              placeholder="Search for groceries..." required />
-            <!-- <button type="submit"
-                      class="ml-2 px-4 py-1 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium text-sm"
-                      style="border-radius: 6px;">
-                      Search
-                    </button> -->
-          </div>
-        </form>
-        <!-- Cart icon -->
-  <a href="./cart.html" class="flex items-center">
-
-        <div type="button" id="cartIcon"
-  class="relative inline-flex items-center p-2 text-sm font-medium text-center border border-green-700/30 text-green-600 bg-green-50 rounded-full hover:bg-green-200 focus:ring-4 focus:outline-none focus:ring-green-400">
-  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-    <path fill="currentColor"
-      d="M5.525 21q-.675 0-1.2-.413T3.6 19.525l-2.55-9.25Q.925 9.8 1.213 9.4T2 9h4.75l4.4-6.55q.125-.2.35-.325T11.975 2t.475.125t.35.325L17.2 9H22q.5 0 .788.4t.162.875l-2.55 9.25q-.2.65-.725 1.063t-1.2.412zM12 17q.825 0 1.413-.587T14 15t-.587-1.412T12 13t-1.412.588T10 15t.588 1.413T12 17M9.175 9H14.8l-2.825-4.2z" />
-  </svg>
-  <span class="sr-only">Cart</span>
-  <div id="cart-count"
-    class="absolute inline-flex items-center justify-center w-5 h-5 font-semibold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 text-[10px]">
-    0
-  </div>
-</div></a>
-      </div>
-    </div>
-  </nav>
-
+  <div id="header-placeholder"></div>
 
   <!-- Modal placeholder -->
   <div id="productDetail-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
@@ -118,7 +71,7 @@ style="background-image: url('/images/banner-2.webp');">
   <!-- Categories -->
   <section class="max-w-screen-xl mx-auto px-4 py-6 border-b-1 border-gray-200/80">
     <div class="text-center mb-6">
-      <h2 class="mt-3 text-xl font-semibold text-green-800 sm:text-2xl">Featured Categories</h2>
+      <h2 class="main mt-3 text-xl font-semibold text-green-800 sm:text-2xl">Featured Categories</h2>
       <p class="text-sm text-gray-400 mt-1">Explore fresh picks for every lifestyle. Carefully selected and delivered to
         your door.</p>
     </div>
@@ -257,15 +210,19 @@ Filter by category
 
       </div>
       <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4" id="product-layout">
-        </form>
       </div>
   </section>
 </body>
 <script src="./tailwindcss/tailwindcss.js"></script>
-
 <script src="./js/template.js"></script>
-<script src="./js/script.js"> </script>
+<script src="./js/script.js"></script>
 <script src="js/modal.js"></script>
 <script src="./js/cart-utils.js"></script>
-
+<script src="./js/header-loader.js"></script>
+<script>
+  // Gọi sau khi toàn bộ script đã được load xong
+  window.addEventListener("DOMContentLoaded", () => {
+    loadHeaderAndInitCartBadge();
+  });
+</script>
 </html>

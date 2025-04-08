@@ -176,7 +176,7 @@ function renderCartList(products) {
     }
   }
   
-  // Update the cart badge
+  // Update the cart badge using the centralized function
   updateCartBadge();
 }
 
@@ -201,27 +201,6 @@ function updateCartTotal(products) {
   const totalElement = document.getElementById('cart-total');
   if (totalElement) {
     totalElement.textContent = `$${total.toFixed(2)}`;
-  }
-}
-
-// Add this function to update cart badge on all pages
-function updateCartBadge() {
-  try {
-    const storedCart = localStorage.getItem("cartProduct");
-    const cartItems = storedCart ? JSON.parse(storedCart) : [];
-    
-    // Calculate total quantity in cart
-    const totalItems = cartItems.reduce((sum, item) => {
-      return sum + (item.quantity || 1);
-    }, 0);
-    
-    // Update all cart item count indicators throughout the page
-    const itemCountElements = document.querySelectorAll(".bg-red-500.rounded-full");
-    itemCountElements.forEach(element => {
-      element.textContent = totalItems;
-    });
-  } catch (e) {
-    console.error("Error updating cart badge:", e);
   }
 }
 

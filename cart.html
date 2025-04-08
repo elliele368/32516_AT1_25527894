@@ -16,35 +16,7 @@
 
 <body class="bg-gray-100">
   <!-- Header -->
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-white border-gray-200 px-4 lg:px-6 py-2.5 border-b border-gray-200 shadow-sm">
-    <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
-      <a href="index.html" class="flex items-center">
-        <img src="images/logo-grocery-1.webp" class="mr-3 h-6 sm:h-9" alt="Logo" />
-        <span class="self-center text-xl font-semibold text-green-700">Green</span>
-        <span class="self-center text-xl font-semibold text-green-500">Mart</span>
-      </a>
-      <div class="flex items-center space-x-2">
-        <form class="w-[350px]">
-          <div class="flex items-center border border-green-700/30 rounded-lg bg-green-50 px-2">
-            <svg class="w-5 h-5 text-gray-500 me-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z" />
-            </svg>
-            <input type="search" class="flex-grow p-2 text-sm text-gray-900 bg-gray-50 focus:outline-none focus:ring-0" placeholder="Search for groceries..." required />
-          </div>
-        </form>
-        <button type="button" class="relative inline-flex items-center p-2 text-sm font-medium text-center border border-green-700/30 text-green-600 bg-green-200 ring-2 ring-green-500 rounded-full">
-          <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24">
-            <path fill="currentColor" d="M5.525 21q-.675 0-1.2-.413T3.6 19.525l-2.55-9.25Q.925 9.8 1.213 9.4T2 9h4.75l4.4-6.55q.125-.2.35-.325T11.975 2t.475.125t.35.325L17.2 9H22q.5 0 .788.4t.162.875l-2.55 9.25q-.2.65-.725 1.063t-1.2.412zM12 17q.825 0 1.413-.587T14 15t-.587-1.412T12 13t-1.412.588T10 15t.588 1.413T12 17M9.175 9H14.8l-2.825-4.2z" />
-          </svg>
-          <span class="sr-only">Cart</span>
-          <div class="absolute inline-flex items-center justify-center w-5 h-5 font-semibold text-white bg-red-500 border-2 border-white rounded-full -top-2 -end-2 text-[10px]" id="cart-badge">
-            0
-          </div>
-        </button>
-      </div>
-    </div>
-  </nav>
+  <div id="header-placeholder"></div>
 
   <!-- Main Content -->
 <style>
@@ -161,7 +133,7 @@
       <div class="md:col-span-2">
         <div class="border border-gray-300 rounded-md p-4 bg-white h-full" style="height: 580px">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="text-xl font-semibold text-green-800">SHOPPING CART (3)</h2>
+            <h2 class="shopcart text-xl font-semibold text-green-800">SHOPPING CART (3)</h2>
             <button class="text-sm text-red-500 hover:underline" onclick="deleteAllItem()">Delete all</button>
           </div>
           <div id="cart-list" class="space-y-4 overflow-y-auto pr-2" style="max-height: 500px">
@@ -326,6 +298,10 @@
       placeOrderBtn.disabled = true;
     }
   });
+</script>
+<script src="./js/header-loader.js"></script>
+<script>
+  loadHeaderAndInitCartBadge(); // ✅ chỉ gọi khi header đã load xong
 </script>
 </body>
 
