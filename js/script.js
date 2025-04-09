@@ -1,5 +1,6 @@
 let quantity = [];
 let hasReserved = [];
+let availableQuantities = [];
 let producChose = [];
 let cartCount = 0; // Total number of products in the cart
 // let cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
@@ -55,8 +56,8 @@ function initEvents() {
     document.getElementsByClassName("plusBtn")[i].addEventListener("click", increaseQty.bind(null, i));
     quantity.push(1);
     hasReserved.push(false);
+    availableQuantities.push(products[i].quantity);
     let foundItem = cartData.find(item => item.id === products[i].id);
-    products[i].quantity = foundItem ? products[i].quantity - foundItem.quantity : products[i].quantity;
     producChose.push({
       id: products[i].id,
       quantity: foundItem ? foundItem.quantity : 0
@@ -108,10 +109,10 @@ function toggleDropdown() {
 
 // When clicking Add to Cart, decrease the stock
 function showQuantityCounter(index) {
-  if (products[index].quantity <= 0) return;
+  if (availableQuantities[index] <= 0) return;
   plusBtn = document.getElementsByClassName('plusBtn')[index];
   quantity[index] = 1;
-  products[index].quantity--;
+  availableQuantities[index]--;
   producChose[index].quantity = quantity[index];
   cartCount++; // Increase cart count
   hasReserved[index] = true;
@@ -122,7 +123,7 @@ function showQuantityCounter(index) {
   document.getElementsByClassName('addButton')[index].classList.add('hidden');
   document.getElementsByClassName('quantitySelector')[index].classList.remove('hidden');
 
-  if (products[index].quantity <= 0) {
+  if (availableQuantities[index] <= 0) {
     plusBtn.disabled = true;
     plusBtn.classList.add('opacity-50', 'bg-gray-500', 'text-white', 'cursor-not-allowed');
     plusBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
@@ -132,17 +133,17 @@ function showQuantityCounter(index) {
 // Increase quantity and decrease stock
 function increaseQty(index) {
   plusBtn = document.getElementsByClassName('plusBtn')[index];
-  if (products[index].quantity > 0) {
+  if (availableQuantities[index] > 0) {
     quantity[index]++;
     producChose[index].quantity++;
-    products[index].quantity--;
+    availableQuantities[index]--;
     cartCount++;
     updateQtyDisplay(index);
     updateStockDisplay(index);
     updateCartDisplay();
   }
 
-  if (products[index].quantity <= 0) {
+  if (availableQuantities[index] <= 0) {
     plusBtn.disabled = true;
     plusBtn.classList.add('opacity-50', 'bg-gray-500', 'text-white', 'cursor-not-allowed');
     plusBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
@@ -155,13 +156,13 @@ function decreaseQty(index) {
   if (quantity[index] > 1) {
     quantity[index]--;
     producChose[index].quantity--;
-    products[index].quantity++;
+    availableQuantities[index]++;
     cartCount--;
     updateQtyDisplay(index);
     updateStockDisplay(index);
     updateCartDisplay();
 
-    if (products[index].quantity > 0) {
+    if (availableQuantities[index] > 0) {
       plusBtn.disabled = false;
       plusBtn.classList.remove('opacity-50', 'bg-gray-500', 'cursor-not-allowed');
       plusBtn.classList.add('bg-green-600', 'text-white', 'hover:bg-green-700');
@@ -170,7 +171,7 @@ function decreaseQty(index) {
     quantity[index] = 1;
     producChose[index].quantity = 1;
     if (hasReserved[index]) {
-      products[index].quantity++;
+      availableQuantities[index]++;
       cartCount--;
       hasReserved[index] = false;
       updateStockDisplay(index);
@@ -192,15 +193,15 @@ function updateQtyDisplay(index) {
 
 // Update stock display UI
 function updateStockDisplay(index) {
-  const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${products[index].quantity}` : `QTY: ${products[index].quantity}`;
+  const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${availableQuantities[index]}` : `QTY: ${availableQuantities[index]}`;
   document.getElementsByClassName('product-quantity')[index].textContent = `(${unitInfo})`;
- this.updateCartData();
+  this.updateCartData();
 }
 
 function updateAddButtonState(index) {
   const addBtn = document.getElementsByClassName('addButton')[index];
 
-  if (products[index].quantity === 0) {
+  if (availableQuantities[index] === 0) {
     addBtn.disabled = true;
     addBtn.textContent = 'Out of stock';
 
