@@ -5,11 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://unpkg.com/flowbite@1.6.6/dist/flowbite.min.js"></script>
-  <script src="./js/product.js"></script>
-  <script src="js/category.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <link rel="stylesheet" href="./css/style.css">
   <title>GreenMart - Fresh Organic Produce</title>
+  <script src="./js/loadheader.js"></script>
   <!-- Add this style to ensure logo is properly sized from the start -->
   <style>
     /* Prevent logo flashing by setting maximum dimensions immediately */
@@ -33,12 +32,12 @@
     document.documentElement.classList.add('preload');
     window.addEventListener('load', function() {
       document.documentElement.classList.remove('preload');
-    });
+    }); 
   </script>
 </head>
 
 <body>
-  <div id="header-placeholder"></div>
+<div id="header"></div>
 
   <!-- Modal placeholder -->
   <div id="productDetail-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
@@ -71,7 +70,7 @@ style="background-image: url('/images/banner-2.webp');">
   <!-- Categories -->
   <section class="max-w-screen-xl mx-auto px-4 py-6 border-b-1 border-gray-200/80">
     <div class="text-center mb-6">
-      <h2 class="main mt-3 text-xl font-semibold text-green-800 sm:text-2xl">Featured Categories</h2>
+      <h2 class="mt-3 text-xl font-semibold text-green-800 sm:text-2xl">Featured Categories</h2>
       <p class="text-sm text-gray-400 mt-1">Explore fresh picks for every lifestyle. Carefully selected and delivered to
         your door.</p>
     </div>
@@ -210,19 +209,38 @@ Filter by category
 
       </div>
       <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4" id="product-layout">
+        </form>
       </div>
   </section>
 </body>
+<script>
+loadHeader("header");
+</script>
 <script src="./tailwindcss/tailwindcss.js"></script>
+
+<!-- Load product data first -->
+<script src="./js/product.js"></script>
+<script src="js/category.js"></script>
+
+<!-- Then load templates and utilities -->
 <script src="./js/template.js"></script>
 <script src="./js/script.js"></script>
-<script src="js/modal.js"></script>
 <script src="./js/cart-utils.js"></script>
-<script src="./js/header-loader.js"></script>
+
+<!-- Finally load features that depend on product data -->
+<script src="js/modal.js"></script>
+<script src="./js/search.js"></script>
+
+<!-- Add this right before search.js -->
 <script>
-  // Gọi sau khi toàn bộ script đã được load xong
-  window.addEventListener("DOMContentLoaded", () => {
-    loadHeaderAndInitCartBadge();
+  // Debug: Check if products array is available
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log("Products loaded:", window.products ? window.products.length : "No products found");
+    
+    if (!window.products) {
+      console.error("Products array not found! Search will not work.");
+    }
   });
 </script>
+
 </html>

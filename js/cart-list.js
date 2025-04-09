@@ -1,20 +1,82 @@
 // cart-list.js
 
-// Update the renderCartItem function for better button styling
+// Initialize cart
+let productChose = [];
+let productList = [];
 
+// Load cart data on page load
+document.addEventListener('DOMContentLoaded', function() {
+  loadCartData();
+  
+  setTimeout(() => { updateCartBadge(); }, 300); // Delay to ensure cart data is loaded before setting up listeners
+  setupAddressListeners();
+  console.log("Cart data loaded and event listeners set up.");
+});
+window.addEventListener('load', function() {
+  console.log("Window loaded, cart data:", productChose);
+}) ;
+// Function to load cart data from localStorage
+function loadCartData() {
+  try {
+    const storedCart = localStorage.getItem("cartProduct");
+    productChose = storedCart ? JSON.parse(storedCart) : [];
+    
+    // Ensure all items have a quantity property
+    productChose = productChose.map(item => {
+      if (typeof item.quantity === 'undefined') {
+        item.quantity = 1;
+      }
+      // Ensure ID is a number
+      item.id = Number(item.id);
+      return item;
+    });
+    
+    // Update localStorage with corrected data
+    localStorage.setItem("cartProduct", JSON.stringify(productChose));
+    
+    // Convert to productList format if products array is available
+    if (productChose.length > 0 && typeof products !== 'undefined') {
+      productList = getChosenProducts(productChose, products);
+      renderCartList(productList);
+    } else {
+      document.getElementById("cart-list").innerHTML = `<div class="p-4 text-center text-gray-500">Your cart is empty</div>`;
+      updateCartTotal([]);
+    }
+  } catch (e) {
+    console.error("Error loading cart from localStorage:", e);
+    productChose = [];
+    document.getElementById("cart-list").innerHTML = `<div class="p-4 text-center text-gray-500">Error loading cart data</div>`;
+  }
+}
+
+// Map cart items to product details
+function getChosenProducts(selectedList, products) {
+  return selectedList.map((selectedItem) => {
+    const foundProduct = products.find((p) => p.id === Number(selectedItem.id));
+    if (!foundProduct) return null;
+
+    return {
+      ...foundProduct,
+      cartQuantity: selectedItem.quantity,
+      selected: selectedItem.selected
+    };
+  }).filter(Boolean);
+}
+
+// Render an individual cart item
 function renderCartItem(product) {
   const isOutOfStock = product.quantity === 0;
-  // Use the cartQuantity property to track items in cart
   const cartQuantity = product.cartQuantity || 1;
   const isChecked = product.selected ?? true;
 
   return `
-    <div class="flex items-center justify-between p-3 rounded-md border border-gray-200 bg-white" style="box-shadow: 0px 4px 8px 0px #0A1A280A;">
+    <div class="flex items-center justify-between p-3 rounded-md border border-gray-200 bg-white" 
+         style="box-shadow: 0px 4px 8px 0px #0A1A280A;">
       <div class="flex items-center space-x-3 min-w-0">
         <input type="checkbox"
                class="custom-checkbox w-5 h-5 rounded-md border border-gray-400 appearance-none checked:bg-green-600 checked:border-green-600 ${isOutOfStock ? 'cursor-not-allowed' : 'cursor-pointer'}"
                ${isOutOfStock ? 'disabled' : isChecked ? 'checked' : ''}
-               onchange="toggleSelection(${product.id}, this.checked)" />
+               data-product-id="${product.id}" />
 
         <img src="${product.image}" alt="${product.name}" class="w-16 h-16 object-cover rounded" />
         <div class="min-w-0">
@@ -27,19 +89,17 @@ function renderCartItem(product) {
           </p>
           <div class="flex items-center mt-1">
             <div class="flex h-[28px] overflow-hidden rounded-md border border-gray-300 text-gray-900">
-              <button class="w-[28px] h-[28px] ${cartQuantity <= 1 ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-700'} text-white text-sm flex items-center justify-center disabled:opacity-50 disabled:bg-gray-500"
-                      id="decrease-btn-${product.id}" 
-                      ${cartQuantity <= 1 ? 'disabled' : ''}
-                      onclick="updateQuantity(${product.id}, ${cartQuantity - 1})">
+              <button type="button" class="quantity-btn decrease w-[28px] h-[28px] ${cartQuantity <= 1 ? 'bg-gray-500' : 'bg-green-600 hover:bg-green-700'} text-white text-sm flex items-center justify-center disabled:opacity-50 disabled:bg-gray-500"
+                      data-product-id="${product.id}" 
+                      ${cartQuantity <= 1 ? 'disabled' : ''}>
                 <span class="leading-none">−</span>
               </button>
               <div class="w-[32px] h-[28px] flex items-center justify-center bg-gray-50 text-sm font-medium">
-                <span id="qty-display-${product.id}">${cartQuantity}</span>
+                <span class="quantity-display" data-product-id="${product.id}">${cartQuantity}</span>
               </div>
-              <button class="w-[28px] h-[28px] text-white text-sm flex items-center justify-center ${isOutOfStock || cartQuantity >= product.quantity ? 'bg-gray-500 opacity-50' : 'bg-green-600 hover:bg-green-700'}"
-                      id="increase-btn-${product.id}" 
-                      ${isOutOfStock || cartQuantity >= product.quantity ? 'disabled' : ''}
-                      onclick="updateQuantity(${product.id}, ${cartQuantity + 1})">
+              <button type="button" class="quantity-btn increase w-[28px] h-[28px] text-white text-sm flex items-center justify-center ${isOutOfStock || cartQuantity >= product.quantity ? 'bg-gray-500 opacity-50' : 'bg-green-600 hover:bg-green-700'}"
+                      data-product-id="${product.id}" 
+                      ${isOutOfStock || cartQuantity >= product.quantity ? 'disabled' : ''}>
                 <span class="leading-none">+</span>
               </button>
             </div>
@@ -50,8 +110,8 @@ function renderCartItem(product) {
         <div class="text-green-600 font-bold text-lg min-w-[60px] text-right">
           $${(product.price * cartQuantity).toFixed(2)}
         </div>
-        <button class="w-9 h-9 flex items-center justify-center border border-red-200 rounded-md hover:bg-red-50 group"
-                onclick="removeFromCart(${product.id})">
+        <button type="button" class="delete-btn w-9 h-9 flex items-center justify-center border border-red-200 rounded-md hover:bg-red-50 group"
+                data-product-id="${product.id}">
           <img src="images/delete.svg" alt="Delete" class="w-5 h-5" />
         </button>
       </div>
@@ -59,9 +119,77 @@ function renderCartItem(product) {
   `;
 }
 
-// Update the toggleSelection function to properly track selected items
+// Render the entire cart list
+function renderCartList(products) {
+  const container = document.getElementById("cart-list");
+  const placeOrderBtn = document.getElementById("place-order-btn");
+  
+  if (!container) return;
+  
+  if (products && products.length > 0) {
+    container.innerHTML = products.map(p => renderCartItem(p)).join('');
+    
+    // Add event listeners to checkboxes
+    document.querySelectorAll('.custom-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+        const productId = Number(this.getAttribute('data-product-id'));
+        toggleSelection(productId, this.checked);
+      });
+    });
+    
+    // Add event listeners to quantity buttons
+    document.querySelectorAll('.quantity-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = Number(this.getAttribute('data-product-id'));
+        const isIncrease = this.classList.contains('increase');
+        
+        // Find current quantity
+        const product = productList.find(p => p.id === productId);
+        if (product) {
+          const currentQty = product.cartQuantity || 1;
+          const newQty = isIncrease ? currentQty + 1 : currentQty - 1;
+          updateQuantity(productId, newQty);
+        }
+      });
+    });
+    
+    // Add event listeners to delete buttons
+    document.querySelectorAll('.delete-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const productId = Number(this.getAttribute('data-product-id'));
+        console.log("Delete button clicked for product ID:", productId);
+        removeFromCart(productId);
+      });
+    });
+    
+    // Calculate and display total
+    updateCartTotal(products.filter(p => p.selected !== false));
+    
+    // Enable order button if there's at least one product
+    if (placeOrderBtn) {
+      placeOrderBtn.disabled = false;
+    }
+  } else {
+    container.innerHTML = `<div class="p-4 text-center text-gray-500">Your cart is empty</div>`;
+    
+    // Set total to zero when cart is empty
+    updateCartTotal([]);
+    
+    // Disable order button when cart is empty
+    if (placeOrderBtn) {
+      placeOrderBtn.disabled = true;
+    }
+  }
+  
+  // Update the cart badge
+  updateCartBadge();
+}
 
+// Toggle item selection
 function toggleSelection(productId, checked) {
+  productId = Number(productId);
+  console.log(`Toggling selection for product ${productId} to ${checked}`);
+  
   // Update the selection status in the productList array
   const productIndex = productList.findIndex(p => p.id === productId);
   if (productIndex !== -1) {
@@ -81,7 +209,11 @@ function toggleSelection(productId, checked) {
   updateCartTotal(productList.filter(p => p.selected !== false));
 }
 
+// Update item quantity
 function updateQuantity(productId, newQuantity) {
+  productId = Number(productId);
+  console.log(`Updating quantity for product ${productId} to ${newQuantity}`);
+  
   const productIndex = productList.findIndex(p => p.id === productId);
   if (productIndex !== -1) {
     // Make sure quantity doesn't go below 1 or above product stock
@@ -106,9 +238,17 @@ function updateQuantity(productId, newQuantity) {
   }
 }
 
-// Update the function that handles removing items from cart
-
+// Remove item from cart
 function removeFromCart(productId) {
+  productId = Number(productId);
+  console.log(`Removing product ${productId} from cart`);
+  
+  // Get the product name for logging
+  const product = productList.find(p => p.id === productId);
+  const productName = product ? product.name : "Unknown product";
+  
+  console.log(`Removing ${productName} (ID: ${productId}) from cart`);
+  
   // Remove from productList
   productList = productList.filter(p => p.id !== productId);
   
@@ -120,69 +260,17 @@ function removeFromCart(productId) {
   
   // Re-render the cart
   renderCartList(productList);
-  
-  // Update cart badge display
-  updateCartBadge();
-  
-  // If cart is now empty, disable the place order button
-  const placeOrderBtn = document.getElementById("place-order-btn");
-  if (placeOrderBtn && productList.length === 0) {
-    placeOrderBtn.disabled = true;
-  } else if (placeOrderBtn) {
-    placeOrderBtn.disabled = false;
-  }
 }
 
-// Add this to updateCartInLocalStorage function
-
+// Update cart in localStorage and update display
 function updateCartInLocalStorage() {
   localStorage.setItem("cartProduct", JSON.stringify(productChose));
-  
-  // Update cart badge
-  updateCartBadge();
-  
-  // Update order button state if the function exists
-  if (typeof updateOrderButtonState === 'function') {
-    updateOrderButtonState();
-  }
-}
-
-// Update the renderCartList function to handle empty cart and button state
-
-// Update the renderCartList function
-function renderCartList(products) {
-  const container = document.getElementById("cart-list");
-  const placeOrderBtn = document.getElementById("place-order-btn");
-  
-  if (products && products.length > 0) {
-    container.innerHTML = products.map(p => renderCartItem(p)).join('');
-    
-    // Calculate and display total
-    updateCartTotal(products);
-    
-    // Enable order button if there's at least one product
-    if (placeOrderBtn) {
-      placeOrderBtn.disabled = false;
-    }
-  } else {
-    container.innerHTML = `<div class="p-4 text-center text-gray-500">Your cart is empty</div>`;
-    
-    // Set total to zero when cart is empty
-    updateCartTotal([]);
-    
-    // Disable order button when cart is empty
-    if (placeOrderBtn) {
-      placeOrderBtn.disabled = true;
-    }
-  }
-  
-  // Update the cart badge using the centralized function
   updateCartBadge();
 }
 
-// Update the updateCartTotal function to calculate only selected items
+// Update total price calculation
 function updateCartTotal(products) {
-  // Only calculate for selected products (if they don't have selected:false)
+  // Only calculate for selected products
   const selectedProducts = products.filter(p => p.selected !== false);
   
   // Calculate subtotal
@@ -204,7 +292,40 @@ function updateCartTotal(products) {
   }
 }
 
-// Add this function to handle address input changes
+// Update cart badge
+function updateCartBadge() {
+  try {
+    const storedCart = localStorage.getItem("cartProduct");
+    const cartItems = storedCart ? JSON.parse(storedCart) : [];
+    
+    // Calculate total quantity in cart
+    const totalItems = cartItems.reduce((sum, item) => {
+      return sum + (item.quantity || 1);
+    }, 0);
+    
+    // Update cart badge
+    const cartBadge = document.getElementById('cart-badge');
+    if (cartBadge) {
+      cartBadge.textContent = totalItems;
+    }
+    
+    // Update cart count
+    const cartCountElement = document.getElementById('cart-count');
+    if (cartCountElement) {
+      cartCountElement.textContent = totalItems;
+    }
+    
+    // Update cart header count
+    const cartHeaderElement =  document.getElementById("cart-shopping-title");
+    if (cartHeaderElement) {
+      cartHeaderElement.textContent = `SHOPPING CART (${totalItems})`;
+    }
+  } catch (e) {
+    console.error("Error updating cart badge:", e);
+  }
+}
+
+// Set up address input listeners
 function setupAddressListeners() {
   const addressInput = document.getElementById("delivery-address");
   if (addressInput) {
@@ -214,68 +335,19 @@ function setupAddressListeners() {
   }
 }
 
-// Call this function when page loads
-document.addEventListener('DOMContentLoaded', function() {
-  updateCartBadge();
-  setupAddressListeners();
-});
-
-// Initialize cart - update this part to ensure correct structure
-let productChose = [];
-try {
-  const storedCart = localStorage.getItem("cartProduct");
-  productChose = storedCart ? JSON.parse(storedCart) : [];
-  
-  // Ensure all items have a quantity property
-  productChose = productChose.map(item => {
-    if (typeof item.quantity === 'undefined') {
-      item.quantity = 1;
-    }
-    return item;
-  });
-  
-  // Update localStorage with corrected data
-  localStorage.setItem("cartProduct", JSON.stringify(productChose));
-} catch (e) {
-  console.error("Error loading cart from localStorage:", e);
-  productChose = [];
-}
-
-function getChosenProducts(selectedList, products) {
-  // Mỗi phần tử trong selectedList, tìm sản phẩm tương ứng trong products
-  return selectedList.map((selectedItem) => {
-    const foundProduct = products.find((p) => p.id === selectedItem.id);
-    if (!foundProduct) return null; // Nếu không tìm thấy, xử lý tuỳ ý
-
-    // Trả về object sản phẩm kèm quantity từ selectedList
-    return {
-      ...foundProduct,
-      cartQuantity: selectedItem.quantity, // Use cartQuantity for the amount in cart
-    };
-  }).filter(Boolean); // lọc bỏ null nếu có
-}
-
-let productList = [];
-if (productChose && productChose.length > 0 && typeof products !== 'undefined') {
-  productList = getChosenProducts(productChose, products);
-  renderCartList(productList);
-} else {
-  document.getElementById("cart-list").innerHTML = `<div class="p-4 text-center text-gray-500">Your cart is empty</div>`;
-}
-
-// Update the deleteAllItem function
+// Delete all items from cart
 function deleteAllItem() {
+  console.log("Deleting all items from cart");
+  
   localStorage.setItem("cartProduct", "[]");
   productChose = [];
   productList = [];
+  
   const container = document.getElementById("cart-list");
   container.innerHTML = `<div class="p-4 text-center text-gray-500">Your cart is empty</div>`;
   
   // Update total if it exists
-  const totalElement = document.getElementById("cart-total");
-  if (totalElement) {
-    totalElement.textContent = "$0.00";
-  }
+  updateCartTotal([]);
   
   // Update cart badge display
   updateCartBadge();

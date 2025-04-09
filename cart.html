@@ -8,15 +8,16 @@
   <script src="https://unpkg.com/flowbite@1.6.6/dist/flowbite.min.js"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
   <link rel="stylesheet" href="./css/style.css" />
-  <script src="./js/product.js"></script>
+  <script src="./js/loadheader.js"></script>
+
   <script src="./js/validate-delivery.js"></script>
   <link rel="stylesheet" href="./css/style.css">
   <title>Cart - GreenMart</title>
 </head>
 
 <body class="bg-gray-100">
+  <div id="header"></div>
   <!-- Header -->
-  <div id="header-placeholder"></div>
 
   <!-- Main Content -->
 <style>
@@ -110,6 +111,34 @@
     box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.1), 0 4px 6px -1px rgba(0, 0, 0, 0.06);
   }
 </style>
+<!-- Add to existing style section -->
+<style>
+  /* Search Results Styling */
+  #search-results {
+    border: 1px solid #e5e7eb;
+    border-top: none;
+    border-radius: 0 0 0.375rem 0.375rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    max-height: 400px;
+    overflow-y: auto;
+    width: 100%;
+  }
+  
+  #search-results-list > div:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+  }
+  
+  /* Product quantity selector in search results */
+  .search-decrease-btn:disabled,
+  .search-increase-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  input#search-input {
+    background-color: #f0fdf4 !important; /* bg-green-50 color */
+  }
+</style>
   
   <section class="pt-24 max-w-screen-xl mx-auto px-4 pb-12">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -133,7 +162,7 @@
       <div class="md:col-span-2">
         <div class="border border-gray-300 rounded-md p-4 bg-white h-full" style="height: 580px">
           <div class="flex items-center justify-between mb-4">
-            <h2 class="shopcart text-xl font-semibold text-green-800">SHOPPING CART (3)</h2>
+            <h2 id= "cart-shopping-title" class="text-xl font-semibold text-green-800">SHOPPING CART (3)</h2>
             <button class="text-sm text-red-500 hover:underline" onclick="deleteAllItem()">Delete all</button>
           </div>
           <div id="cart-list" class="space-y-4 overflow-y-auto pr-2" style="max-height: 500px">
@@ -268,41 +297,21 @@
       </div>
     </div>
   </section>
-  
-  <script src="./js/template.js"></script>
-  <script src="./js/script.js"></script>
-  <script src="./js/cart-list.js"></script>
-  <script src="./js/cart-utils.js"></script>
-  <!-- Add this script to the end of the body to initialize payment methods -->
-<script>
-  // Initialize payment method buttons
-  document.addEventListener('DOMContentLoaded', function() {
-    const cashBtn = document.getElementById('cash-payment');
-    const digitalBtn = document.getElementById('digital-payment');
-    
-    if (cashBtn) {
-      // Cash is the only option, keep it selected
-      cashBtn.classList.add('bg-green-50', 'text-green-800');
-      document.getElementById('selected-payment-method').value = 'cash';
-      
-      // Digital wallet is disabled, no event listeners needed
-    }
-  });
-</script>
-<!-- Add this script just before the closing body tag -->
-<script>
-  // Ensure place order button is always disabled on page load
-  document.addEventListener('DOMContentLoaded', function() {
-    const placeOrderBtn = document.getElementById('place-order-btn');
-    if (placeOrderBtn) {
-      placeOrderBtn.disabled = true;
-    }
-  });
-</script>
-<script src="./js/header-loader.js"></script>
-<script>
-  loadHeaderAndInitCartBadge(); // ✅ chỉ gọi khi header đã load xong
-</script>
+  <script>
+    loadHeader("header");
+    </script>
+  <script>
+    // Ensure place order button is always disabled on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const placeOrderBtn = document.getElementById('place-order-btn');
+      if (placeOrderBtn) {
+        placeOrderBtn.disabled = true;
+      }
+    });
+  </script>
+  <script src="./js/product.js"></script>
+<script src="./js/cart-list.js"></script>
+<script src="./js/search.js"></script>
 </body>
 
 </html>

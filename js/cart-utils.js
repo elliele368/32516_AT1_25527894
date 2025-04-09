@@ -27,7 +27,7 @@ function updateCartBadge() {
     }, 0);
     
     // Update all cart badges on the page
-    const cartBadges = document.querySelectorAll("#cart-count");
+    const cartBadges = document.querySelectorAll("#cart-badge, #cart-count");
     cartBadges.forEach(badge => {
       if (badge) {
         badge.textContent = totalItems;
@@ -35,7 +35,7 @@ function updateCartBadge() {
     });
     
     // Update header text if on cart page
-    const cartHeaderElement = document.getElementsByClassName("shopcart")[0];
+    const cartHeaderElement = document.getElementById("cart-shopping-title");
     if (cartHeaderElement) {
       cartHeaderElement.textContent = `SHOPPING CART (${totalItems})`;
     }

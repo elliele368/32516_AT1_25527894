@@ -40,7 +40,7 @@ function updateCartData() {
     .map(({ id, quantity }) => ({ id, quantity }));
   
   localStorage.setItem("cartProduct", JSON.stringify(cartList));
-  updateCartBadge(); // Use the centralized function
+  updateCartBadgeFromStorage(); // Update badge whenever cart data changes
 }
 
 // Mở modal
@@ -168,10 +168,7 @@ function initializeModalEvents(product, index) {
       // Trừ stock, tăng cartCount
       product.quantity -= modalQty;
       cartCount += modalQty;
-      
-      // Update cart badge using centralized function
-      updateCartBadge();
-      
+      updateCartDisplay();
       updateProductCardStock(index);
 
       // Add this section to update cart data
