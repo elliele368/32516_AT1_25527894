@@ -34,8 +34,14 @@ function loadCartData() {
     // Update localStorage with corrected data
     localStorage.setItem("cartProduct", JSON.stringify(productChose));
     
-    // Convert to productList format if products array is available
-    if (productChose.length > 0 && typeof products !== 'undefined') {
+    // Wait for products to be loaded if they're not available yet
+    if (typeof products === 'undefined' || !products.length) {
+      setTimeout(loadCartData, 100); // Retry after 100ms
+      return;
+    }
+    
+    // Convert to productList format
+    if (productChose.length > 0) {
       productList = getChosenProducts(productChose, products);
       renderCartList(productList);
     } else {
