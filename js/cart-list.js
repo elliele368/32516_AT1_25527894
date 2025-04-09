@@ -364,3 +364,12 @@ function deleteAllItem() {
     placeOrderBtn.disabled = true;
   }
 }
+ function reloadCart(){
+  const container = document.getElementById("cart-list");
+  container.innerHTML ="";
+  loadCartData();
+ }
+ document.addEventListener("Cart-change",()=>{
+  reloadCart();
+  console.log("cart -change !!");
+ })

@@ -1,8 +1,3 @@
-// @ts-nocheck
-/**
- * Search functionality for product search
- */
-
 let searchTimeout = null;
 const MIN_SEARCH_CHARS = 2;
 
@@ -173,34 +168,60 @@ function renderSearchResults(results) {
 
 // Attach event listeners to search result buttons.
 function attachSearchResultEvents() {
-  // Add to cart buttons.
+  // Clone add-to-cart buttons to remove old event listeners
+  document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+    const newBtn = button.cloneNode(true);
+    button.replaceWith(newBtn);
+  });
+
+  // Re-select the fresh buttons and attach listener
   document.querySelectorAll('.add-to-cart-btn').forEach(button => {
     button.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      const productId = parseInt(button.getAttribute('data-id'));
-      addToCartFromSearch(productId);
+      let productId = parseInt(button.getAttribute('data-id'));
+      console.log(productId);
+      addToCartFromSearch(productId, button);
       return false;
     });
   });
 
-  // Increase quantity buttons.
+  // Attach increase/decrease events
+  attachEventIncreaseDecrease();
+}
+
+// Update attachEventIncreaseDecrease function
+function attachEventIncreaseDecrease(){
+  // Clone increase buttons to remove old event listeners
+  document.querySelectorAll('.search-increase-btn').forEach(button => {
+    const newBtn = button.cloneNode(true);
+    button.replaceWith(newBtn);
+  });
+
+  // Clone decrease buttons to remove old event listeners
+  document.querySelectorAll('.search-decrease-btn').forEach(button => {
+    const newBtn = button.cloneNode(true);
+    button.replaceWith(newBtn);
+  });
+
+  // Re-attach event listeners to the newly cloned buttons
   document.querySelectorAll('.search-increase-btn').forEach(button => {
     button.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      const productId = parseInt(button.getAttribute('data-id'));
+      let productId = parseInt(button.getAttribute('data-id'));
+      console.log(productId);
       updateSearchQuantity(productId, 1);
       return false;
     });
   });
 
-  // Decrease quantity buttons.
   document.querySelectorAll('.search-decrease-btn').forEach(button => {
     button.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      const productId = parseInt(button.getAttribute('data-id'));
+      let productId = parseInt(button.getAttribute('data-id'));
+      console.log("==>", button.getAttribute('data-id'));
       updateSearchQuantity(productId, -1);
       return false;
     });
@@ -209,20 +230,10 @@ function attachSearchResultEvents() {
 
 // Update quantity in search results.
 function updateSearchQuantity(productId, change) {
-  const product = products.find(p => p.id === productId);
-  if (!product) return;
-
-  const qtyElement = document.querySelector(`.search-qty[data-id="${productId}"]`);
-  if (!qtyElement) return;
-
-  let qty = parseInt(qtyElement.textContent);
-  qty += change;
-  qty = Math.max(1, Math.min(qty, product.quantity));
-  qtyElement.textContent = qty;
-
+  let product = products.find(p => p.id === productId);
   let productChose = [];
   try {
-    const storedCart = localStorage.getItem('cartProduct');
+    let storedCart = localStorage.getItem('cartProduct');
     if (storedCart) {
       productChose = JSON.parse(storedCart);
     }
@@ -230,7 +241,19 @@ function updateSearchQuantity(productId, change) {
     console.error('Error loading cart data:', e);
   }
 
-  const productIndex = productChose.findIndex(item => item.id === productId);
+  let productIndex = productChose.findIndex(item => item.id === productId);
+  console.log(productIndex)
+  if (!product) return;
+
+  const qtyElement = document.querySelector(`.search-qty[data-id="${productId}"]`);
+  if (!qtyElement) return;
+
+  let qty = parseInt(productChose[productIndex].quantity);
+  qty += change;
+  // qty = Math.max(1, Math.min(qty, product.quantity));
+  qtyElement.textContent = qty;
+
+ 
   if (productIndex !== -1) {
     productChose[productIndex].quantity = qty;
     localStorage.setItem('cartProduct', JSON.stringify(productChose));
@@ -245,7 +268,7 @@ function updateSearchQuantity(productId, change) {
     }
   }
 
-  const decreaseBtn = document.querySelector(`.search-decrease-btn[data-id="${productId}"]`);
+  let decreaseBtn = document.querySelector(`.search-decrease-btn[data-id="${productId}"]`);
   if (decreaseBtn) {
     if (qty <= 1) {
       decreaseBtn.disabled = true;
@@ -258,7 +281,7 @@ function updateSearchQuantity(productId, change) {
     }
   }
 
-  const increaseBtn = document.querySelector(`.search-increase-btn[data-id="${productId}"]`);
+  let increaseBtn = document.querySelector(`.search-increase-btn[data-id="${productId}"]`);
   if (increaseBtn) {
     if (qty >= product.quantity) {
       increaseBtn.disabled = true;
@@ -270,18 +293,18 @@ function updateSearchQuantity(productId, change) {
       increaseBtn.classList.add('bg-green-600', 'text-white', 'hover:bg-green-700');
     }
   }
+  document.dispatchEvent(new Event("Cart-change"));
 }
 
 // Add product to cart from search results.
-function addToCartFromSearch(productId) {
-  const product = products.find(p => p.id === productId);
+function addToCartFromSearch(productId , button) {
+   let product = products.find(p => p.id === productId);
   if (!product || product.quantity <= 0) return;
 
-  const qty = 1;
 
   let productChose = [];
   try {
-    const storedCart = localStorage.getItem('cartProduct');
+    let storedCart = localStorage.getItem('cartProduct');
     if (storedCart) {
       productChose = JSON.parse(storedCart);
     }
@@ -289,23 +312,20 @@ function addToCartFromSearch(productId) {
     console.error('Error loading cart data:', e);
   }
 
-  const productIndex = productChose.findIndex(item => item.id === productId);
+  let productIndex = productChose.findIndex(item => item.id === productId);
+  console.log("vao day index " + productIndex)
   if (productIndex !== -1) {
     productChose[productIndex].quantity += 1;
   } else {
     productChose.push({
       id: productId,
-      quantity: qty,
-      name: product.name,
-      price: product.price,
-      image: product.image,
-      displayUnit: product.displayUnit || 'item'
+      quantity: 1
     });
   }
 
   localStorage.setItem('cartProduct', JSON.stringify(productChose));
   if (typeof updateCartBadgeFromStorage === 'function') {
-    updateCartBadgeFromStorage();
+    searchUpdateCartBadgeFromStorage();
   } else {
     const cartBadge = document.getElementById('cart-count');
     if (cartBadge) {
@@ -324,21 +344,32 @@ function addToCartFromSearch(productId) {
       console.error('Error updating cart list from search:', e);
     }
   }
+  // console.log
+  console.log(document.querySelector(`.add-to-cart-btn[data-id="${productId}"]`), productId) 
 
-  const buttonParent = document.querySelector(`.add-to-cart-btn[data-id="${productId}"]`).parentNode;
+  //const buttonParent = document.querySelector(`.add-to-cart-btn[data-id="${productId}"]`).parentNode;
+  let buttonParent = button.parentNode;
+  
   buttonParent.innerHTML = `
     <div class="flex items-center justify-center bg-gray-50 border border-gray-300 rounded-md overflow-hidden h-8 quantity-controls" data-id="${productId}">
-      <button type="button" class="search-decrease-btn w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-400" data-id="${productId}" disabled>
+      <button type="button" class="search-decrease-btn btn-decrease-${productId} w-8 h-8 flex items-center justify-center bg-gray-100 text-gray-400" data-id="${productId}" disabled>
         <span class="leading-none font-bold">−</span>
       </button>
       <span class="search-qty w-10 h-8 flex items-center justify-center text-sm font-medium" data-id="${productId}">1</span>
-      <button type="button" class="search-increase-btn w-8 h-8 flex items-center justify-center ${product.quantity > 1 ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-100 text-gray-400'}" data-id="${productId}" ${product.quantity > 1 ? '' : 'disabled'}>
+      <button type="button" class="search-increase-btn btn-${productId} w-8 h-8 flex items-center justify-center ${product.quantity > 1 ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-100 text-gray-400'}" data-id="${productId}" ${product.quantity > 1 ? '' : 'disabled'}>
         <span class="leading-none font-bold">+</span>
       </button>
     </div>
   `;
-
   attachSearchResultEvents();
+  document.dispatchEvent(new Event("Cart-change"));
+// document.getElementById('btn-decrease-'+productId).addEventListener("click",()=>{
+//   updateSearchQuantity(productId, -1);
+// })
+// document.getElementById('btn-'+productId).addEventListener("click",()=>{
+//   updateSearchQuantity(productId, +1);
+// })
+
 }
 
 // On DOMContentLoaded, initialize search if search input is available; otherwise, wait for headerLoaded event.
@@ -349,3 +380,25 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('headerLoaded', initSearch);
   }
 });
+function searchUpdateCartBadgeFromStorage() {
+  try {
+    const cartBadge = document.getElementById("cart-count");
+    if (!cartBadge) return; // Ngăn lỗi nếu phần tử chưa tồn tại
+
+    const storedCart = localStorage.getItem("cartProduct");
+    if (!storedCart) {
+      cartBadge.textContent = "0";
+      return;
+    }
+
+    const cartItems = JSON.parse(storedCart);
+    const totalItems = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+
+    cartBadge.textContent = totalItems;
+    cartCount = totalItems;
+  } catch (e) {
+    console.error("Error updating cart badge:", e);
+    const fallback = document.getElementById("cart-count");
+    if (fallback) fallback.textContent = "0";
+  }
+}
