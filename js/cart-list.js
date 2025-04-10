@@ -45,13 +45,21 @@ function loadCartData() {
       productList = getChosenProducts(productChose, products);
       renderCartList(productList);
     } else {
-      document.getElementById("cart-list").innerHTML = `<div class="p-4 text-center text-gray-500">Your cart is empty</div>`;
+      container.innerHTML = `
+      <div class="cart-empty-state flex flex-col items-center justify-center pt-24 text-center text-gray-500 h-full">
+  <img src="./images/empty.svg" alt="Empty cart illustration" class="w-60 mb-4" />
+  <div class="text-sm font-normal text-gray-400">Your cart is empty</div>
+</div>
+`;
       updateCartTotal([]);
     }
   } catch (e) {
     console.error("Error loading cart from localStorage:", e);
     productChose = [];
-    document.getElementById("cart-list").innerHTML = `<div class="p-4 text-center text-gray-500">Error loading cart data</div>`;
+    document.getElementById("cart-list").innerHTML = `<div class="cart-empty-state flex flex-col items-center justify-center pt-24 text-center text-gray-500 h-full">
+  <img src="./images/empty.svg" alt="Empty cart illustration" class="w-60 mb-4" />
+  <div class="text-sm font-normal text-gray-400">Your cart is empty</div>
+</div>`;
   }
 }
 
@@ -176,7 +184,12 @@ function renderCartList(products) {
       placeOrderBtn.disabled = false;
     }
   } else {
-    container.innerHTML = `<div class="p-4 text-center text-gray-500">Your cart is empty</div>`;
+    container.innerHTML = `
+    <div class="cart-empty-state flex flex-col items-center justify-center pt-24 text-center text-gray-500 h-full">
+  <img src="./images/empty.svg" alt="Empty cart illustration" class="w-60 mb-4" />
+  <div class="text-sm font-normal text-gray-400">Your cart is empty</div>
+</div>
+`;
     
     // Set total to zero when cart is empty
     updateCartTotal([]);
@@ -350,7 +363,12 @@ function deleteAllItem() {
   productList = [];
   
   const container = document.getElementById("cart-list");
-  container.innerHTML = `<div class="p-4 text-center text-gray-500">Your cart is empty</div>`;
+  container.innerHTML = `
+ <div class="cart-empty-state flex flex-col items-center justify-center pt-24 text-center text-gray-500 h-full">
+  <img src="./images/empty.svg" alt="Empty cart illustration" class="w-60 mb-4" />
+  <div class="text-sm font-normal text-gray-400">Your cart is empty</div>
+</div>
+`;
   
   // Update total if it exists
   updateCartTotal([]);
