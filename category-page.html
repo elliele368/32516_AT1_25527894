@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/flowbite@1.6.6/dist/flowbite.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <title>Categories - GreenMart</title>
+</head>
+<body class="bg-gray-100">
+  <div id="header"></div>
+
+  <!-- Main Content -->
+  <div class="pt-14 flex min-h-screen">
+    <!-- Filter Sidebar -->
+    <aside class="w-64 p-6 bg-white fixed top-14 left-0 h-[calc(100vh-3.5rem)] overflow-y-auto border-r border-gray-200"
+    style="box-shadow: 0px 4px 8px 0px #0A1A280A;">
+      <h2 class="text-lg font-semibold text-green-800 mb-4">Filter by Category</h2>
+      <div class="space-y-4" id="filter-sidebar">
+        <!-- Categories will be rendered here -->
+      </div>
+    </aside>
+
+    <!-- Product Grid -->
+    <main class="flex-1 p-6 ml-64">
+      <div class="max-w-screen-xl mx-auto">
+        <!-- Heading & Title -->
+        <div class="flex items-center justify-between mb-6">
+          <h1 id="category-title" class="text-2xl font-semibold text-green-800">All Categories</h1>
+          <div class="flex items-center gap-4">
+            <span id="product-count" class="text-sm text-gray-500"></span>
+          </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="product-layout">
+          <!-- Products will be rendered here -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Scripts -->
+  <script src="./js/product.js"></script>
+  <script src="./js/category.js"></script>
+  <script src="./js/template.js"></script>
+  <script src="./js/modal.js"></script> <!-- Load modal sớm hơn -->
+  <script src="./js/cart-utils.js"></script>
+  <script src="./js/script.js"></script>
+  <script src="./js/search.js"></script>
+  <script src="./js/loadheader.js"></script>
+  <script src="./js/validate-delivery.js"></script>
+  <script src="./js/category-page.js"></script> <!-- Sau cùng -->
+  <script>
+  document.addEventListener('DOMContentLoaded', async () => {
+  // Chờ sản phẩm load trước khi hiển thị
+  if (!productsInit || productsInit.length === 0) {
+    for (let i = 0; i < 20; i++) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+      if (productsInit && productsInit.length > 0) break;
+    }
+  }
+
+  // Render filter sidebar
+  const filterContainer = document.getElementById('filter-sidebar');
+  if (filterContainer) {
+    filterContainer.innerHTML = categories.map((cat, index) =>
+      renderCategoryFilter(cat, index)
+    ).join('');
+  }
+
+  // Kiểm tra URL parameters
+  const params = new URLSearchParams(window.location.search);
+  const categoryParam = params.get('category');
+  const subcategoryParams = params.getAll('subcategory'); // Use getAll to handle multiple subcategories
+
+  if (categoryParam) {
+    activeFilters.add(categoryParam);
+
+    const categoryIndex = categories.findIndex(c => c.name === categoryParam);
+    if (categoryIndex !== -1) {
+      const groupId = `cat-${categoryIndex}`;
+      const parentCheckbox = document.getElementById(groupId);
+      if (parentCheckbox) {
+        parentCheckbox.checked = true;
+        categories[categoryIndex].subs.forEach((sub, subIndex) => {
+          const subCheckbox = document.getElementById(`${groupId}-sub-${subIndex}`);
+          if (subCheckbox) {
+            subCheckbox.checked = true;
+            activeFilters.add(sub);
+          }
+        });
+      }
+    }
+  }
+
+  if (subcategoryParams.length > 0) {
+    subcategoryParams.forEach(subcategoryParam => {
+      activeFilters.add(subcategoryParam);
+
+      categories.forEach((cat, catIndex) => {
+        const subIndex = cat.subs.indexOf(subcategoryParam);
+        if (subIndex !== -1) {
+          const groupId = `cat-${catIndex}`;
+          const subCheckbox = document.getElementById(`${groupId}-sub-${subIndex}`);
+          if (subCheckbox) {
+            subCheckbox.checked = true;
+          }
+        }
+      });
+    });
+  }
+
+  // Cập nhật tiêu đề danh mục
+  const titleElement = document.getElementById('category-title');
+  const selected = [];
+  const selectedSubs = [];
+  const selectedGroups = new Set();
+
+  categories.forEach(cat => {
+    if (activeFilters.has(cat.name)) selected.push(cat.name);
+    cat.subs.forEach(sub => {
+      if (activeFilters.has(sub)) {
+        selected.push(sub);
+        selectedSubs.push({ name: sub, parent: cat.name });
+        selectedGroups.add(cat.name);
+      }
+    });
+  });
+
+  if (selected.length === 0) {
+    titleElement.textContent = 'All Categories';
+  } else if (
+    selectedSubs.length > 0 &&
+    selected.length === selectedSubs.length &&
+    new Set(selectedSubs.map(s => s.parent)).size === 1
+  ) {
+    // Chỉ sub từ cùng 1 group → hiện tên group
+    titleElement.textContent = selectedSubs[0].parent;
+  } else if (
+    selectedSubs.length > 0 &&
+    selected.length === selectedSubs.length &&
+    new Set(selectedSubs.map(s => s.parent)).size > 1
+  ) {
+    // Chỉ sub từ nhiều group → liệt kê tên sub
+    titleElement.textContent = selectedSubs.map(s => s.name).join(', ');
+  } else {
+    // Mix category & sub khác nhóm → filtered
+    titleElement.textContent = 'Filtered Categories';
+  }
+
+  updateProductDisplay();
+});
+
+loadHeader("header");
+</script>
+</body>
+</html>

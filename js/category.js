@@ -24,29 +24,32 @@ function renderCategories() {
 
     const categoryHTML = `
       <div class="relative">
-        <div onclick="toggleCategoryDropdown('${id}')"
-          id="${id}-toggle"
-          class="flex items-center justify-between px-3 py-3 border border-gray-200/80 rounded hover:bg-gray-100 transition cursor-pointer"
-          style="box-shadow: 0px 4px 8px 0px #0a1a280b;">
-          <div class="flex items-center">
-            <div class="w-10 h-10 flex items-center justify-center">
-              <img src="${cat.icon}" alt="${cat.name} Icon" class="w-8 h-8" />
+        <a href="category-page.html?category=${encodeURIComponent(cat.name)}"
+          class="block">
+          <div onclick="event.preventDefault(); toggleCategoryDropdown('${id}')"
+            id="${id}-toggle"
+            class="flex items-center justify-between px-3 py-3 border border-gray-200/80 rounded hover:bg-gray-100 transition cursor-pointer"
+            style="box-shadow: 0px 4px 8px 0px #0a1a280b;">
+            <div class="flex items-center">
+              <div class="w-10 h-10 flex items-center justify-center">
+                <img src="${cat.icon}" alt="${cat.name} Icon" class="w-8 h-8" />
+              </div>
+              <div class="ml-3 text-left">
+                <h3 class="text-sm font-semibold text-gray-800">${cat.name}</h3>
+                <p class="text-xs text-gray-400">${count} items</p>
+              </div>
             </div>
-            <div class="ml-3 text-left">
-              <h3 class="text-sm font-semibold text-gray-800">${cat.name}</h3>
-              <p class="text-xs text-gray-400">${count} items</p>
-            </div>
+            <svg id="${id}-arrow" class="arrow-icon w-5 h-5 text-gray-500 transform transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
           </div>
-          <svg id="${id}-arrow" class="arrow-icon w-5 h-5 text-gray-500 transform transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-          </svg>
-        </div>
+        </a>
 
         <div id="${id}-dropdown" class="absolute z-20 mt-2 w-full bg-white rounded-lg border border-gray-100 shadow-lg hidden">
           <div class="py-2">
-            <a href="category.html?category=${encodeURIComponent(cat.name)}" class="block px-4 py-2 text-sm hover:bg-gray-100">View all products</a>
+            <a href="category-page.html?category=${encodeURIComponent(cat.name)}" class="block px-4 py-2 text-sm hover:bg-gray-100">View all products</a>
             ${cat.subs.map(sub => `
-              <a href="category.html?subcategory=${encodeURIComponent(sub)}" class="block px-4 py-2 text-sm hover:bg-gray-100">${sub}</a>
+              <a href="category-page.html?subcategory=${encodeURIComponent(sub)}" class="block px-4 py-2 text-sm hover:bg-gray-100">${sub}</a>
             `).join('')}
           </div>
         </div>
