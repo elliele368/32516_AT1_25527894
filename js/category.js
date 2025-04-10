@@ -1,5 +1,3 @@
-// ==== categories.js (category rendering and dropdown toggle) ====
-
 const categories = [
   { name: "Fruit & Vegetable", icon: "./images/fruit.svg", subs: ["Fruit", "Salad"] },
   { name: "Meat & Seafood", icon: "./images/fish.svg", subs: ["Meat", "Seafood"] },
@@ -8,8 +6,12 @@ const categories = [
   { name: "Health & Wellness", icon: "./images/health.svg", subs: ["Health", "Wellness"] }
 ];
 
-function countProductsByTag(tagName) {
-  return productsInit.filter(p => p.tag.includes(tagName)).length;
+function countProductsForCategory(cat) {
+  const tagsToMatch = [cat.name, ...cat.subs];
+  const tagSet = new Set(tagsToMatch.map(t => t.toLowerCase()));
+  return productsInit.filter(p =>
+    p.tag.some(t => tagSet.has(t.toLowerCase()))
+  ).length;
 }
 
 function renderCategories() {
@@ -17,7 +19,7 @@ function renderCategories() {
   container.innerHTML = "";
 
   categories.forEach((cat, index) => {
-    const count = cat.subs.reduce((acc, sub) => acc + countProductsByTag(sub), 0);
+    const count = countProductsForCategory(cat);
     const id = `category-${index}`;
 
     const categoryHTML = `
@@ -42,9 +44,9 @@ function renderCategories() {
 
         <div id="${id}-dropdown" class="absolute z-20 mt-2 w-full bg-white rounded-lg border border-gray-100 shadow-lg hidden">
           <div class="py-2">
-            <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">View all products</a>
+            <a href="category.html?category=${encodeURIComponent(cat.name)}" class="block px-4 py-2 text-sm hover:bg-gray-100">View all products</a>
             ${cat.subs.map(sub => `
-              <a href="#" class="block px-4 py-2 text-sm hover:bg-gray-100">${sub}</a>
+              <a href="category.html?subcategory=${encodeURIComponent(sub)}" class="block px-4 py-2 text-sm hover:bg-gray-100">${sub}</a>
             `).join('')}
           </div>
         </div>
@@ -103,3 +105,6 @@ function toggleFilterDropdown() {
 
 // CSS:
 // .rotate-180 { transform: rotate(180deg); }
+
+console.log("productsInit:", productsInit); // Kiểm tra có dữ liệu chưa
+console.log("count for Fruit:", countProductsForCategory(categories[0]));

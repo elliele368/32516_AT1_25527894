@@ -30,13 +30,18 @@ fetch('products.php')
     initRenderProduct();
     initEvents();
     updateCartBadgeFromStorage();
+    
+    // Ensure categories render after productsInit is ready
+    if (typeof renderCategories === "function") {
+      renderCategories();
+    }
   })
   .catch(err => {
     console.error("Failed to load products from PHP:", err);
   });
 
-  function getProductChose(){
-    return productChose
-        .filter((product) => product.quantity > 0)
-        .map(({ id, quantity }) => ({ id, quantity }));
+function getProductChose(){
+  return productChose
+      .filter((product) => product.quantity > 0)
+      .map(({ id, quantity }) => ({ id, quantity }));
 }
