@@ -1,9 +1,3 @@
-/**
- * Form validation for delivery details with tooltip-style error messages
- * Only shows errors after user interaction with fields
- * Button is disabled until all fields are properly filled AND cart has items
- */
-
 document.addEventListener('DOMContentLoaded', function() {
   // Get form elements
   const nameInput = document.querySelector('input[placeholder="Enter your name here"]');
@@ -286,7 +280,16 @@ document.addEventListener('DOMContentLoaded', function() {
       console.log(JSON.stringify(orderData, null, 2));
       
       // Show success message to user
-      alert('Order placed successfully!');
+      const email = emailInput.value;
+      localStorage.setItem("customerEmail", email);
+      
+      const modalEmail = document.getElementById("customer-email");
+      if (modalEmail) modalEmail.textContent = email;
+      
+      const modal = document.getElementById("modal-overlay");
+      if (modal) modal.classList.remove("hidden");
+      
+      console.log('✅ Modal trigger running!');
     }
   });
   
@@ -367,6 +370,19 @@ document.addEventListener('DOMContentLoaded', function() {
     cartObserver.observe(cartList, {
       childList: true,
       subtree: true
+    });
+  }
+
+  // Close modal functionality
+  const modal = document.getElementById("modal-overlay");
+  const closeBtn = document.getElementById("close-modal");
+
+  if (modal && closeBtn) {
+    closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) {
+        modal.classList.add("hidden");
+      }
     });
   }
 });
