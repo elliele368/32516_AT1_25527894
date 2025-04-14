@@ -133,7 +133,7 @@ function updateProductDisplay() {
       )
     );
   }
-  window.products = filteredProducts;
+  products = filteredProducts;
 
   // Cập nhật số lượng sản phẩm
   countElement.textContent = `${filteredProducts.length} products`;

@@ -82,7 +82,7 @@
     border-color: #ef4444 transparent transparent transparent;
   }
 </style>
-  <!-- Add this to the existing styles section -->
+ 
 <style>
   /* Payment method buttons */
   .payment-method {
@@ -112,7 +112,7 @@
     box-shadow: 0 6px 8px -1px rgba(0, 0, 0, 0.1), 0 4px 6px -1px rgba(0, 0, 0, 0.06);
   }
 </style>
-<!-- Add to existing style section -->
+
 <style>
   /* Search Results Styling */
   #search-results {
@@ -142,7 +142,7 @@
 </style>
   
   <section class="pt-24 max-w-screen-xl mx-auto px-4 pb-12">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-[16px] items-stretch h-full">
       <!-- Cart List -->
       <style>
         input[type="checkbox"].custom-checkbox:checked::before {
@@ -161,20 +161,32 @@
         }
       </style>
       <div class="md:col-span-2">
-        <div class="border border-gray-300 rounded-md p-4 bg-white h-full" style="height: 580px">
+        <div class="border border-gray-300 rounded-md p-4 bg-white h-full flex flex-col" style="height: 580px">
           <div class="flex items-center justify-between mb-4">
             <h2 id= "cart-shopping-title" class="text-xl font-semibold text-green-800">SHOPPING CART (3)</h2>
             <button class="text-sm text-red-500 hover:underline" onclick="deleteAllItem()">Delete all</button>
           </div>
-          <div id="cart-list" class="space-y-4 overflow-y-auto pr-2" style="max-height: 500px">
+          <div id="cart-list" class="space-y-4 pb-4 overflow-y-auto pr-2 flex-1">
             <!-- Rendered dynamically from cart-list.js -->
           </div>
+          
+    <!-- Sticky Subtotal + Place Order inside modal -->
+    <div class="mt-auto border-t border-gray-200 pt-4 bg-white flex justify-between items-center">
+      <div class="text-lg font-semibold">
+        Subtotal: <span class="text-green-600" id="sub-cart-total">$0.00</span>
+      </div>
+      <button id="continue-btn" disabled
+       class="bg-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-green-700 transition uppercase tracking-wider disabled:bg-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
+        CONTINUE
+      </button>
+    </div>
+    
         </div>
       </div>
   
-      <!-- Delivery Details -->
-<div>
-  <div class="border border-gray-300 rounded-md p-4 bg-white">
+<!-- Delivery Details -->
+<div id="delivery-details-section" class="h-full flex flex-col opacity-40 pointer-events-none">
+  <div class="border border-gray-300 rounded-md p-4 bg-white flex flex-col h-full">
     <h2 class="text-xl font-semibold text-green-800 mb-4">DELIVERY DETAILS</h2>
     <div class="space-y-4">
 
@@ -324,6 +336,14 @@
       <p class="text-gray-600">Your order has been confirmed and will be delivered soon! The order details have been sent to <span id="customer-email" class="font-semibold"></span>.</p>
     </div>
   </div>
+  <script>
+    document.getElementById("continue-btn")?.addEventListener("click", () => {
+      const deliverySection = document.getElementById("delivery-details-section");
+      if (deliverySection) {
+        deliverySection.classList.remove("opacity-40", "pointer-events-none");
+      }
+    });
+  </script>
 </body>
 
 </html>

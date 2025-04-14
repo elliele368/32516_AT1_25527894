@@ -11,6 +11,14 @@
 </head>
 <body class="bg-gray-100">
   <div id="header"></div>
+ <!-- Modal placeholder -->
+ <div id="productDetail-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-xl max-w-4xl w-full p-6 relative">
+   <button id="closeModalButton"  class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+    <div id="modalContent"></div>
+  </div>
+</div>
+<button class="close-btn">X</button>
 
   <!-- Main Content -->
   <div class="pt-14 flex min-h-screen">
@@ -35,7 +43,7 @@
         </div>
 
         <!-- Product Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="product-layout">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6" id="product-layout">
           <!-- Products will be rendered here -->
         </div>
       </div>
@@ -51,7 +59,7 @@
   <script src="./js/script.js"></script>
   <script src="./js/search.js"></script>
   <script src="./js/loadheader.js"></script>
-  <script src="./js/validate-delivery.js"></script>
+  <!-- <script src="./js/validate-delivery.js"></script> -->
   <script src="./js/category-page.js"></script> <!-- Sau cùng -->
   <script>
   document.addEventListener('DOMContentLoaded', async () => {

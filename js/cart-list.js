@@ -46,7 +46,7 @@ function loadCartData() {
       renderCartList(productList);
     } else {
       container.innerHTML = `
-      <div class="cart-empty-state flex flex-col items-center justify-center pt-24 text-center text-gray-500 h-full">
+      <div class="cart-empty-state flex flex-col items-center justify-center text-center text-gray-500 h-full">
   <img src="./images/empty.svg" alt="Empty cart illustration" class="w-60 mb-4" />
   <div class="text-sm font-normal text-gray-400">Your cart is empty</div>
 </div>
@@ -56,7 +56,7 @@ function loadCartData() {
   } catch (e) {
     console.error("Error loading cart from localStorage:", e);
     productChose = [];
-    document.getElementById("cart-list").innerHTML = `<div class="cart-empty-state flex flex-col items-center justify-center pt-24 text-center text-gray-500 h-full">
+    document.getElementById("cart-list").innerHTML = `<div class="cart-empty-state flex flex-col items-center justify-center text-center text-gray-500 h-full">
   <img src="./images/empty.svg" alt="Empty cart illustration" class="w-60 mb-4" />
   <div class="text-sm font-normal text-gray-400">Your cart is empty</div>
 </div>`;
@@ -185,7 +185,7 @@ function renderCartList(products) {
     }
   } else {
     container.innerHTML = `
-    <div class="cart-empty-state flex flex-col items-center justify-center pt-24 text-center text-gray-500 h-full">
+    <div class="cart-empty-state flex flex-col items-center justify-center text-center text-gray-500 h-full">
   <img src="./images/empty.svg" alt="Empty cart illustration" class="w-60 mb-4" />
   <div class="text-sm font-normal text-gray-400">Your cart is empty</div>
 </div>
@@ -306,9 +306,25 @@ function updateCartTotal(products) {
   
   // Update the total display
   const totalElement = document.getElementById('cart-total');
+  const subtotalElement = document.getElementById('sub-cart-total');
   if (totalElement) {
     totalElement.textContent = `$${total.toFixed(2)}`;
+    subtotalElement.textContent = `$${subtotal.toFixed(2)}`;
   }
+      // Enable continue button only if there are selected products
+      const continueBtn = document.getElementById("continue-btn");
+      if (continueBtn) {
+        let isDisable =products.filter(p => p.selected !== false).length === 0;
+        continueBtn.disabled = isDisable;
+        if(isDisable){
+          const deliverySection = document.getElementById("delivery-details-section");
+          if (deliverySection) {
+            deliverySection.classList.add("opacity-40", "pointer-events-none");
+          }
+          
+        }
+      }
+    
 }
 
 // Update cart badge
@@ -364,7 +380,7 @@ function deleteAllItem() {
   
   const container = document.getElementById("cart-list");
   container.innerHTML = `
- <div class="cart-empty-state flex flex-col items-center justify-center pt-24 text-center text-gray-500 h-full">
+ <div class="cart-empty-state flex flex-col items-center justify-center text-center text-gray-500 h-full">
   <img src="./images/empty.svg" alt="Empty cart illustration" class="w-60 mb-4" />
   <div class="text-sm font-normal text-gray-400">Your cart is empty</div>
 </div>
@@ -391,3 +407,4 @@ function deleteAllItem() {
   reloadCart();
   console.log("cart -change !!");
  })
+
