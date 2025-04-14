@@ -84,7 +84,7 @@ function renderCartItem(product) {
   const isChecked = product.selected ?? true;
 
   return `
-    <div class="flex items-center justify-between p-3 rounded-md border border-gray-200 bg-white" 
+    <div class="flex items-center justify-between p-3 rounded-md border border-gray-200 bg-white shadow-xs transition-all duration-200 hover:shadow-2xl hover:border-green-300 hover:text-green-600" 
          style="box-shadow: 0px 4px 8px 0px #0A1A280A;">
       <div class="flex items-center space-x-3 min-w-0">
         <input type="checkbox"
@@ -407,4 +407,3 @@ function deleteAllItem() {
   reloadCart();
   console.log("cart -change !!");
  })
-
