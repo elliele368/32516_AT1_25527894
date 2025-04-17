@@ -34,13 +34,51 @@ function flyToCartAnimation(product, startX, startY, endX, endY) {
 }
 
 // Reference to updateCartData from script.js
-function updateCartData() {
-  let cartList = producChose
-    .filter((product) => product.quantity > 0)
-    .map(({ id, quantity }) => ({ id, quantity }));
-  
-  localStorage.setItem("cartProduct", JSON.stringify(cartList));
-  updateCartBadgeFromStorage(); // Update badge whenever cart data changes
+function updateCartDataLocal(index, modalQty, productId) {
+  // Get current cart data
+  let cartList = [];
+  try {
+    cartList = JSON.parse(localStorage.getItem("cartProduct")) || [];
+  } catch (e) {
+    console.error("Error parsing cart data:", e);
+    cartList = [];
+  }
+
+  // Update producChose array
+  if (!producChose[index]) {
+    producChose[index] = {
+      id: productId,
+      quantity: 0
+    };
+  }
+  producChose[index].quantity += modalQty;
+
+  // Find if product exists in cart
+  const existingItemIndex = cartList.findIndex(item => item.id === productId);
+
+  if (existingItemIndex !== -1) {
+    // Update existing item quantity
+    cartList[existingItemIndex].quantity += modalQty;
+  } else {
+    // Add new item to cart
+    cartList.push({
+      id: productId,
+      quantity: modalQty
+    });
+  }
+
+  // Update localStorage
+  try {
+    localStorage.setItem("cartProduct", JSON.stringify(cartList));
+    console.log("Cart updated successfully:", cartList);
+  } catch (e) {
+    console.error("Error saving to localStorage:", e);
+  }
+
+  // Update cart badge
+  updateCartBadgeFromStorage();
+
+  return cartList; // Return updated cart data
 }
 
 // Mở modal
@@ -48,10 +86,11 @@ function openProductModal(product, index) {
   const modal = document.getElementById("productDetail-modal");
   const content = document.getElementById("modalContent");
   const scrollPosition = window.scrollY;
-
-  selectedProductIndex = index;
+  console.log("scrollPosition: ", product, index);
+  // Get cart data from localStorage
+  
   modalQty = 1;
-
+  console.log("model: ", product, index);
   modal.classList.remove("hidden");
   document.body.classList.add('modal-open');
   document.body.style.top = `-${scrollPosition}px`;
@@ -140,7 +179,7 @@ function initializeModalEvents(product, index) {
     const increaseBtn = document.getElementById(`increase-btn-${product.id}`);
     const addToCartBtn = document.getElementById(`add-to-cart-btn-${product.id}`);
     const qtyDisplay = document.getElementById(`qty-display-${product.id}`);
-  
+    qtyDisplay.textContent = modalQty;
     // Khi modal mở, set nút ban đầu
     updateModalButtonState(product, decreaseBtn, increaseBtn, addToCartBtn, qtyDisplay);
 
@@ -186,7 +225,7 @@ function initializeModalEvents(product, index) {
       }
       
       // Update localStorage
-      updateCartData();
+      updateCartDataLocal(index, modalQty, product.id);
 
       // Cập nhật text hiển thị còn lại
       document.getElementById("model-qty").textContent = `(${product.displayUnit} / QTY: ${product.quantity})`;
