@@ -47,53 +47,62 @@ function initRenderProduct() {
   }
 }
 
-let intiTime =0;
+let intiTime = 1;
 function initEvents() {
+    try {
+        cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
+      } catch (e) {
+        // Nếu parse lỗi, dùng productsInit làm mặc định
+        cartData = [];
+      }
+    console.log("cart list la: ",cartData);
+  const decreaseButtons = document.querySelectorAll(".decreaseBtn");
+  const addButtons = document.querySelectorAll(".addButton");
+  const plusButtons = document.querySelectorAll(".plusBtn");
 
-  intiTime++;
-  console.log(intiTime);
-  for (let i = 0; i < products.length; i++) {
-    // Initialize modal button events for each product
-    document.getElementsByClassName("decreaseBtn")[i].addEventListener("click", decreaseQty.bind(null, i));
-    document.getElementsByClassName("addButton")[i].addEventListener("click", showQuantityCounter.bind(null, i));
-    document.getElementsByClassName("plusBtn")[i].addEventListener("click", increaseQty.bind(null, i));
-    
-    hasReserved.push(false);
-    let foundItem = cartData.find(item => item.id === products[i].id);
-    console.log(foundItem);
-    if(foundItem){
+  decreaseButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const index = button.getAttribute("data-index");
+      decreaseQty(parseInt(index));
+    });
+  });
+
+  addButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const index = button.getAttribute("data-index");
+      showQuantityCounter(parseInt(index));
+    });
+  });
+
+  plusButtons.forEach(button => {
+    button.addEventListener("click", () => {
+      const index = button.getAttribute("data-index");
+      increaseQty(parseInt(index));
+    });
+  });
+
+  // Initialize other product-related states
+  hasReserved = [];
+  quantity = [];
+  producChose = [];
+  products.forEach((product, i) => {
+    const foundItem = cartData.find(item => item.id === product.id);
+    if (foundItem) {
       quantity.push(foundItem.quantity);
-      producChose.push({
-        id: products[i].id,
-        quantity: foundItem.quantity
-      });
-    }else{
+      producChose.push({ id: product.id, quantity: foundItem.quantity });
+    } else {
       quantity.push(0);
-      producChose.push({
-        id: products[i].id,
-        quantity: 0
-      });
+      producChose.push({ id: product.id, quantity: 0 });
     }
-    if(intiTime==1){
-      products[i].quantity = foundItem ? products[i].quantity - foundItem.quantity : products[i].quantity;
 
-    }
-   
-    // const existingItem = producChose.find(p => p.id === productId);
-    // if (existingItem) {
-    //   existingItem.quantity = foundItem ? foundItem.quantity : 0;
-    // } else {
-    //   producChose.push({ id: productId, quantity:  0 });
+    // if (intiTime === 1) {
+    //   product.quantity = foundItem ? product.quantity - foundItem.quantity : product.quantity;
     // }
-  
-    // producChose.push({
-    //   id: products[i].id,
-    //   quantity: 0
-    // });
+
     updateQtyDisplay(i);
-    updateStockDisplay(i);
+    InitStockDisplay(i);
     updateAddButtonState(i);
-  }
+  });
 }
 
 // Load Product Cards
@@ -142,7 +151,7 @@ function showQuantityCounter(index) {
   if (products[index].quantity <= 0) return;
   plusBtn = document.getElementsByClassName('plusBtn')[index];
   quantity[index] += 1;
-  products[index].quantity--;
+  products[index].quantity-= quantity[index];
   producChose[index].quantity = quantity[index];
   cartCount++; // Increase cart count
   hasReserved[index] = true;
@@ -223,10 +232,15 @@ function updateQtyDisplay(index) {
 }
 
 // Update stock display UI
+function InitStockDisplay(index) {
+    const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${products[index].quantity}` : `QTY: ${products[index].quantity}`;
+    document.getElementsByClassName('product-quantity')[index].textContent = `(${unitInfo})`;
+
+  }
 function updateStockDisplay(index) {
   const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${products[index].quantity}` : `QTY: ${products[index].quantity}`;
   document.getElementsByClassName('product-quantity')[index].textContent = `(${unitInfo})`;
- this.updateCartData();
+ updateCartData(index);
 }
 
 function updateAddButtonState(index) {
@@ -315,26 +329,73 @@ function filterByTags(selectedTags) {
   );
 }
 
-function updateCartData(){
+// function updateCartData(index){
 
-  producChose = Array.from(
-    new Map(producChose.map(item => [item.id, item])).values()
-  );
+//   producChose = Array.from(
+//     new Map(producChose.map(item => [item.id, item])).values()
+//   );
   
-  // console.log(unique);
-  // Output: [ { id: 1, quantity: 4 } ]
-  let cartList = producChose
-  .filter((product) => product.quantity > 0)
-  .map(({ id, quantity }) => ({ id, quantity }));
+//   // console.log(unique);
+//   // Output: [ { id: 1, quantity: 4 } ]
+//   let cartList = producChose
+//   .filter((product) => product.quantity > 0)
+//   .map(({ id, quantity }) => ({ id, quantity }));
  
-  console.log("carlist la",cartList);
-  // producChose.forEach()
+//   console.log("carlist la",cartList);
+//   // producChose.forEach()
 
-  localStorage.setItem("cartProduct", JSON.stringify(cartList));
+//   localStorage.setItem("cartProduct", JSON.stringify(cartList));
 
-  updateCartBadgeFromStorage(); // Update badge whenever cart data changes
-}
-
+//   updateCartBadgeFromStorage(); // Update badge whenever cart data changes
+// }
+function updateCartData(index) {
+    // Get current cart data
+    let cartList = [];
+    try {
+      cartList = JSON.parse(localStorage.getItem("cartProduct")) || [];
+    } catch (e) {
+      cartList = [];
+    }
+  
+    // Get the product being updated
+    const currentProduct = products[index];
+    const currentQuantity = quantity[index];
+  
+    // Find if product already exists in cart
+    const existingProductIndex = cartList.findIndex(item => item.id === currentProduct.id);
+  
+    if (currentQuantity > 0) {
+      // If product exists, update quantity
+      if (existingProductIndex !== -1) {
+        cartList[existingProductIndex].quantity = currentQuantity;
+      } else {
+        // If product doesn't exist, add it
+        cartList.push({
+          id: currentProduct.id,
+          quantity: currentQuantity
+        });
+      }
+    } else {
+      // If quantity is 0, remove product from cart
+      if (existingProductIndex !== -1) {
+        cartList.splice(existingProductIndex, 1);
+      }
+    }
+  
+    // Update localStorage
+    localStorage.setItem("cartProduct", JSON.stringify(cartList));
+    
+    // Update cart badge
+    updateCartBadgeFromStorage();
+    
+    // Update producChose array to match cart
+    producChose[index] = {
+      id: currentProduct.id,
+      quantity: currentQuantity
+    };
+  
+    console.log("Cart updated:", cartList);
+  }
 document.addEventListener('DOMContentLoaded', function() {
   updateCartBadgeFromStorage();
 });

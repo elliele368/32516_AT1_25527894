@@ -1,20 +1,20 @@
 let products = [];
 let productsInit = [];
 
-function initRenderProduct() {
-  console.log("Rendering products:", products);
-  // Add your rendering logic here
-}
+// function initRenderProduct() {
+//   console.log("Rendering products:", products);
+//   // Add your rendering logic here
+// }
 
-function initEvents() {
-  console.log("Setting up events");
-  // Add your event listener logic here
-}
+// function initEvents() {
+//   console.log("Setting up events");
+//   // Add your event listener logic here
+// }
 
-function updateCartBadgeFromStorage() {
-  console.log("Updating cart badge");
-  // Add your cart badge update logic here
-}
+// function updateCartBadgeFromStorage() {
+//   console.log("Updating cart badge");
+//   // Add your cart badge update logic here
+// }
 
 fetch('products.php')
   .then(response => {
@@ -26,11 +26,12 @@ fetch('products.php')
   .then(data => {
     productsInit = data;
     products = data;
-    
     initRenderProduct();
-    initEvents();
-    updateCartBadgeFromStorage();
-    
+    // renderCategories(); // Assuming this function exists for rendering categories
+    initEvents(); // Initialize events for products
+
+
+    updateCartBadgeFromStorage(); 
     // Ensure categories render after productsInit is ready
     if (typeof renderCategories === "function") {
       renderCategories();
