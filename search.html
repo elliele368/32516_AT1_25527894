@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/flowbite@1.6.6/dist/flowbite.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="stylesheet" href="./css/style.css" />
+  <title>Search Results - GreenMart</title>
+</head>
+<body class="bg-gray-100">
+  <div id="header"></div>
+  <!-- Modal placeholder -->
+  <div id="productDetail-modal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-xl max-w-4xl w-full p-6 relative">
+      <button id="closeModalButton" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl leading-none">&times;</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="pt-14 flex min-h-screen">
+    <!-- Product Grid -->
+    <main class="flex-1 p-6">
+      <div class="max-w-screen-xl mx-auto">
+        <!-- Heading & Title -->
+        <div class="flex items-center justify-between mb-6">
+          <h1 class="text-2xl font-semibold text-green-800">Search Results</h1>
+          <div class="flex items-center gap-4">
+            <span id="product-count" class="text-sm text-gray-500"></span>
+          </div>
+        </div>
+
+        <!-- Product Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6" id="product-layout">
+          <!-- Products will be rendered here -->
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+  // Initialize global variables
+  let products = [];
+  let productsInit = [];
+ 
+
+  // Utility functions
+  function deepFreeze(object) {
+      const propNames = Object.getOwnPropertyNames(object);
+      propNames.forEach(name => {
+          const value = object[name];
+          if (value && typeof value === "object") { 
+              deepFreeze(value);
+          }
+      });
+      return Object.freeze(object);
+  }
+
+  function getOriginalProduct(productId) {
+      const originalProduct = productsInit.find(p => p.id === productId);
+      return originalProduct ? JSON.parse(JSON.stringify(originalProduct)) : null;
+  }
+
+  // Main initialization
+  async function initializeSearchPage() {
+      try {
+          // Get search query from URL
+          const params = new URLSearchParams(window.location.search);
+          const searchQuery = params.get('query') || '';
+
+          // Load header first
+          await loadHeader("header");
+
+          // Setup search input with current query
+          const searchInput = document.getElementById("search-input");
+          if (searchInput) {
+              searchInput.value = searchQuery;
+              searchInput.addEventListener("keypress", function(e) {
+                  if (e.key === "Enter") {
+                      e.preventDefault();
+                      const query = this.value.trim();
+                      if (query.length > 0) {
+                          window.location.href = `search.php?query=${encodeURIComponent(query)}`;
+                      }
+                  }
+              });
+          }
+
+          // Fetch search results
+          const response = await fetch(`search.php?query=${encodeURIComponent(searchQuery)}`);
+          if (!response.ok) throw new Error('Network response was not ok');
+          const data = await response.json();
+
+          // Initialize products data
+          productsInit = deepFreeze(JSON.parse(JSON.stringify(data)));
+          products = JSON.parse(JSON.stringify(data));
+
+          // Initialize cart data
+          cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
+
+          // Initialize arrays
+          products.forEach((product, index) => {
+              const cartItem = cartData.find(item => item.id === product.id);
+              quantity[index] = cartItem ? cartItem.quantity : 0;
+              hasReserved[index] = false;
+              producChose[index] = { 
+                  id: product.id, 
+                  quantity: cartItem ? cartItem.quantity : 0 
+              };
+          });
+
+          // Render products
+          initRenderProduct();
+          
+          // Initialize events
+          initEvents();
+          updateCartBadgeFromStorage();
+
+          // Update search results count
+          document.querySelector("h1").textContent = `Search Results (${products.length})`;
+
+          // Setup modal
+          const closeModalBtn = document.getElementById('closeModalButton');
+          if (closeModalBtn) {
+              closeModalBtn.addEventListener('click', closeProductModal);
+          }
+
+      } catch (error) {
+          console.error("Failed to initialize search page:", error);
+          document.getElementById("product-layout").innerHTML = 
+              '<div class="col-span-full text-center py-8 text-red-500">Error loading search results</div>';
+      }
+  }
+
+  // Initialize when DOM is ready
+  document.addEventListener('DOMContentLoaded', initializeSearchPage);
+  </script>
+
+  <!-- Scripts -->
+  <script src="./js/category.js"></script>
+  <script src="./js/template.js"></script>
+  <script src="./js/cart-utils.js"></script>
+  <script src="./js/category-pg.js"></script>
+  <script src="./js/modal.js"></script>
+  <script src="./js/loadheader.js"></script>
+
+</body>
+</html>
