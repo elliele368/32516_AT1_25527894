@@ -24,8 +24,9 @@ fetch('products.php')
     return response.json();
   })
   .then(data => {
-    productsInit = data;
-    products = data;
+    productsInit = deepFreeze(JSON.parse(JSON.stringify(data)));
+
+    products = JSON.parse(JSON.stringify(data));
     initRenderProduct();
     // renderCategories(); // Assuming this function exists for rendering categories
     initEvents(); // Initialize events for products
@@ -45,4 +46,26 @@ function getProductChose(){
   return productChose
       .filter((product) => product.quantity > 0)
       .map(({ id, quantity }) => ({ id, quantity }));
+}
+function getOriginalProduct(productId) {
+  const originalProduct = productsInit.find(p => p.id === productId);
+  // Return a deep copy of the original product to prevent mutations
+  return JSON.parse(JSON.stringify(
+    originalProduct
+));
+}
+function deepFreeze(object) {
+  // Retrieve the property names defined on object
+  const propNames = Object.getOwnPropertyNames(object);
+
+  // Freeze properties before freezing self
+  propNames.forEach(name => {
+    const value = object[name];
+
+    if (value && typeof value === "object") { 
+      deepFreeze(value);
+    }
+  });
+
+  return Object.freeze(object);
 }

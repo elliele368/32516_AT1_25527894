@@ -81,8 +81,18 @@ function getChosenProducts(selectedList, products) {
 function renderCartItem(product) {
   const isOutOfStock = product.quantity === 0;
   const cartQuantity = product.cartQuantity || 1;
-  const isChecked = product.selected ?? true;
-
+  //const isChecked = product.selected ? true : false;
+  const isChecked =product.selected !== false;
+  if (isOutOfStock) {
+    product.selected = false;
+    // Update in localStorage
+    const cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
+    const productIndex = cartData.findIndex(item => item.id === product.id);
+    if (productIndex !== -1) {
+      cartData[productIndex].selected = false;
+      localStorage.setItem("cartProduct", JSON.stringify(cartData));
+    }
+  }
   return `
     <div class="flex items-center justify-between p-3 rounded-md border border-gray-200 bg-white shadow-xs transition-all duration-200 hover:shadow-2xl hover:border-green-300 hover:text-green-600" 
          style="box-shadow: 0px 4px 8px 0px #0A1A280A;">

@@ -101,7 +101,7 @@ function initEvents() {
 
     updateQtyDisplay(i);
     InitStockDisplay(i);
-    updateAddButtonState(i);
+    updateAddButtonState(product,i);
   });
 }
 
@@ -158,7 +158,6 @@ function showQuantityCounter(index) {
   updateQtyDisplay(index);
   updateStockDisplay(index);
   updateCartDisplay(); // Update cart UI
-
   document.getElementsByClassName('addButton')[index].classList.add('hidden');
   document.getElementsByClassName('quantitySelector')[index].classList.remove('hidden');
 
@@ -167,6 +166,7 @@ function showQuantityCounter(index) {
     plusBtn.classList.add('opacity-50', 'bg-gray-500', 'text-white', 'cursor-not-allowed');
     plusBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
   }
+  
 }
 
 // Increase quantity and decrease stock
@@ -241,12 +241,26 @@ function updateStockDisplay(index) {
   const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${products[index].quantity}` : `QTY: ${products[index].quantity}`;
   document.getElementsByClassName('product-quantity')[index].textContent = `(${unitInfo})`;
  updateCartData(index);
+ updateAddButtonState(products[index], index);
 }
 
-function updateAddButtonState(index) {
+function updateAddButtonState(product, index) {
   const addBtn = document.getElementsByClassName('addButton')[index];
+  let cartQuantity = 0;
+  try {
+    const cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
+    const cartItem = cartData.find(item => item.id === product.id);
+    if (cartItem) {
+      cartQuantity = cartItem.quantity;
+    }
+  } catch (e) {
+    console.error("Error getting cart quantity:", e);
+  }
 
-  if (products[index].quantity === 0) {
+  // Get available quantity (original quantity minus cart quantity)
+  let quantityProduct  = productsInit.find(p => p.id === product.id).quantity - cartQuantity;
+  
+  if (quantityProduct=== 0) {
     addBtn.disabled = true;
     addBtn.textContent = 'Out of stock';
 
@@ -312,9 +326,9 @@ function getSelectedCategories() {
   console.log("Selected categories:", selected);
 
   if (selected.length > 0) {
-    products = filterByTags(selected);
+    products = JSON.parse(JSON.stringify(filterByTags(selected)));
   } else {
-    products = productsInit;
+    products = JSON.parse(JSON.stringify(productsInit));
   }
 
   document.getElementById("product-layout").innerHTML = "";

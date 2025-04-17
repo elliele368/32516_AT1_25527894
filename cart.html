@@ -344,6 +344,129 @@
       }
     });
   </script>
+  <script>
+    document.getElementById("place-order-btn")?.addEventListener("click", () => {
+      const storedCart = localStorage.getItem("cartProduct");
+      const cartItems = storedCart ? JSON.parse(storedCart) : [];
+     // const selectedItems = cartItems.filter(p => p.quantity > 0);
+      const selectedItems = cartItems.filter(p => p.quantity > 0 && p.selected !== false);
+
+      fetch("orders.php", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ items: selectedItems }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        const modalOverlay = document.getElementById("modal-overlay");
+        const customerEmailEl = document.getElementById("customer-email");
+
+        if (data.success && !data.outOfStock) {
+          // Show order confirmation modal
+          if (modalOverlay && customerEmailEl) {
+            customerEmailEl.textContent = document.querySelector("input[type='email']")?.value || "";
+
+            // Remove only selected items from cartProduct
+            const updatedCart = cartItems.filter(item => {
+              return !selectedItems.some(sel => sel.id === item.id);
+            });
+            localStorage.setItem("cartProduct", JSON.stringify(updatedCart));
+
+            // Refresh cart UI after closing modal
+            document.getElementById("close-modal")?.addEventListener("click", () => {
+              modalOverlay.classList.add("hidden");
+              updateCartBadge();
+              // Store delivery inputs before reload
+              sessionStorage.setItem("delivery_name", document.querySelector("input[placeholder='Enter your name here']").value);
+              sessionStorage.setItem("delivery_phone", document.querySelector("input[placeholder='(04)']").value);
+              sessionStorage.setItem("delivery_email", document.querySelector("input[placeholder='example@gmail.com']").value);
+              sessionStorage.setItem("delivery_address", document.getElementById("delivery-address").value);
+              sessionStorage.setItem("delivery_state", document.getElementById("delivery-state").value);
+              location.reload(); // Optional if you want fresh rendering
+            });
+            document.getElementById("modal-overlay")?.addEventListener("click", () => {
+              modalOverlay.classList.add("hidden");
+              updateCartBadge();
+              // Store delivery inputs before reload
+              sessionStorage.setItem("delivery_name", document.querySelector("input[placeholder='Enter your name here']").value);
+              sessionStorage.setItem("delivery_phone", document.querySelector("input[placeholder='(04)']").value);
+              sessionStorage.setItem("delivery_email", document.querySelector("input[placeholder='example@gmail.com']").value);
+              sessionStorage.setItem("delivery_address", document.getElementById("delivery-address").value);
+              sessionStorage.setItem("delivery_state", document.getElementById("delivery-state").value);
+              location.reload(); // Optional if you want fresh rendering
+            });
+          }
+        } else if (data.outOfStock) {
+          modalOverlay?.classList.add("hidden");
+          // Highlight out of stock items
+          const outOfStockIds = data.outOfStock;
+          const cartList = document.getElementById("cart-list");
+          outOfStockIds.forEach(id => {
+            const itemEl = cartList.querySelector(`[data-id="${id}"]`);
+            if (itemEl) {
+              itemEl.classList.add("border-red-400");
+              const warning = document.createElement("div");
+              warning.className = "text-red-500 text-sm mt-2 font-medium";
+              warning.textContent = "Out of stock";
+              itemEl.appendChild(warning);
+            }
+          });
+
+          // Show out of stock modal
+          const outOfStockModal = document.createElement("div");
+          outOfStockModal.innerHTML = `
+            <div id="out-of-stock-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+              <div class="bg-white rounded-lg shadow-xl w-full max-w-xl p-8 relative text-center">
+                <button id="close-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 text-2xl leading-none focus:outline-none">&times;</button>
+                <h2 class="text-xl font-semibold text-gray-700 mb-4">Some items in your order are out of stock.</h2>
+                <img src="images/empty.svg" alt="Out of Stock" class="w-56 h-auto mx-auto mb-6" />
+                <p class="text-gray-500">Unfortunately, your order contains one or more items that are currently out of stock. Please update your cart and try again.</p>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(outOfStockModal);
+          document.getElementById("out-of-stock-modal")?.addEventListener("click", (e) => {
+            if (e.target.id === "out-of-stock-modal" || e.target.id === "close-modal") {
+              document.getElementById("out-of-stock-modal").remove();
+              updateCartBadge();
+              // Store delivery inputs before reload
+              sessionStorage.setItem("delivery_name", document.querySelector("input[placeholder='Enter your name here']").value);
+              sessionStorage.setItem("delivery_phone", document.querySelector("input[placeholder='(04)']").value);
+              sessionStorage.setItem("delivery_email", document.querySelector("input[placeholder='example@gmail.com']").value);
+              sessionStorage.setItem("delivery_address", document.getElementById("delivery-address").value);
+              sessionStorage.setItem("delivery_state", document.getElementById("delivery-state").value);
+              location.reload(); // Optional if you want fresh rendering
+            }
+          });
+          // document.getElementById("close-modal")?.addEventListener("click", () => {
+          //   document.getElementById("modal-overlay")?.remove();
+          // });
+        }
+        updateCartBadge();
+      })
+      .catch(error => {
+        console.error("Order submission failed:", error);
+      });
+    });
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      document.querySelector("input[placeholder='Enter your name here']").value = sessionStorage.getItem("delivery_name") || "";
+      document.querySelector("input[placeholder='(04)']").value = sessionStorage.getItem("delivery_phone") || "";
+      document.querySelector("input[placeholder='example@gmail.com']").value = sessionStorage.getItem("delivery_email") || "";
+      document.getElementById("delivery-address").value = sessionStorage.getItem("delivery_address") || "";
+      document.getElementById("delivery-state").value = sessionStorage.getItem("delivery_state") || "";
+
+      // Optionally clear storage after restoring
+      sessionStorage.removeItem("delivery_name");
+      sessionStorage.removeItem("delivery_phone");
+      sessionStorage.removeItem("delivery_email");
+      sessionStorage.removeItem("delivery_address");
+      sessionStorage.removeItem("delivery_state");
+    });
+  </script>
 </body>
 
 </html>

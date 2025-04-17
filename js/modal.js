@@ -82,14 +82,50 @@ function updateCartDataLocal(index, modalQty, productId) {
 }
 
 // Mở modal
-function openProductModal(product, index) {
+function openProductModal(productmn, index) {
+  let product = JSON.parse(JSON.stringify(productmn));
+
+  // Get cart data and calculate available quantity
+  // try {
+  //   // let cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
+  //   // let cartItem = cartData.find(item => item.id === product.id);
+  //   // if (cartItem) {
+  //   //   // Update available quantity based on cart
+  //   //   let originalProduct = productsInit.find(p => p.id === product.id);
+  //   //   console.log("originalProduct: ", originalProduct);
+  //   //   console.log("cartItem: ", cartItem);
+  //   //   product.quantity = originalProduct.quantity - cartItem.quantity;
+  //   //   console.log("product.quantity: ", product.quantity);
+  //   //   if( product.quantity < 0) {
+  //   //     product.quantity = 0; // Ensure quantity doesn't go negative
+  //   //   }
+  //   }
+  // } catch (e) {
+  //   console.error("Error updating product quantity:", e);
+  // }
+
   const modal = document.getElementById("productDetail-modal");
   const content = document.getElementById("modalContent");
   const scrollPosition = window.scrollY;
   console.log("scrollPosition: ", product, index);
   // Get cart data from localStorage
-  
-  modalQty = 1;
+  try {
+    const cartData = JSON.parse(localStorage.getItem("cartProduct")) || [];
+    const cartItem = cartData.find(item => item.id === product.id);
+    
+    // Set modalQty based on cart quantity or default to 1
+    // modalQty = cartItem ? cartItem.quantity : 1;
+
+    // Update product quantity based on cart
+    const originalProduct = getOriginalProduct(product.id);
+    if (originalProduct && cartItem) {
+      product.quantity = originalProduct.quantity - cartItem.quantity;
+    }
+  } catch (e) {
+    console.error("Error getting cart data:", e);
+    modalQty = 1;
+  }
+  modalQty =  1; // Set modalQty to the quantity of the selected product
   console.log("model: ", product, index);
   modal.classList.remove("hidden");
   document.body.classList.add('modal-open');
