@@ -36,12 +36,41 @@ foreach ($items as $item) {
 if (count($outOfStockItems) > 0) {
   echo json_encode(["success" => false, "outOfStock" => $outOfStockItems]);
 } else {
-  // If all items are available, update stock
+  // Save order info
+  $name = $conn->real_escape_string($data["name"]);
+  $phone = $conn->real_escape_string($data["phone"]);
+  $email = $conn->real_escape_string($data["email"]);
+  $address = $conn->real_escape_string($data["address"]);
+  $state = $conn->real_escape_string($data["state"]);
+  $payment = $conn->real_escape_string($data["payment"]);
+  $total = (float)$data["total"];
+
+  $conn->query("INSERT INTO orders (name, phone, email, address, state, payment_method, total) 
+                VALUES ('$name', '$phone', '$email', '$address', '$state', '$payment', $total)");
+
+  $orderId = $conn->insert_id;
+
+  // Insert order items
   foreach ($items as $item) {
-    $id = (int)$item["id"];
+    $productId = (int)$item["id"];
     $qty = (int)$item["quantity"];
-    $conn->query("UPDATE products SET quantity = quantity - $qty WHERE id = $id");
+    $productInfoResult = $conn->query("SELECT name, price FROM products WHERE id = $productId");
+    if ($productInfoResult && $productRow = $productInfoResult->fetch_assoc()) {
+      $productName = $conn->real_escape_string($productRow["name"]);
+      $price = (float)$productRow["price"];
+    } else {
+      $productName = '';
+      $price = 0;
+    }
+
+    $totalPrice = $price * $qty;
+    $conn->query("INSERT INTO order_items (order_id, product_id, product_name, quantity, price) 
+                  VALUES ($orderId, $productId, '$productName', $qty, $totalPrice)");
+
+    // Update stock
+    $conn->query("UPDATE products SET quantity = quantity - $qty WHERE id = $productId");
   }
+
   echo json_encode(["success" => true]);
 }
 

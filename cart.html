@@ -351,12 +351,30 @@
      // const selectedItems = cartItems.filter(p => p.quantity > 0);
       const selectedItems = cartItems.filter(p => p.quantity > 0 && p.selected !== false);
 
+      const name = document.querySelector("input[placeholder='Enter your name here']").value;
+      const phone = document.querySelector("input[placeholder='(04)']").value;
+      const email = document.querySelector("input[placeholder='example@gmail.com']").value;
+      const address = document.getElementById("delivery-address").value;
+      const state = document.getElementById("delivery-state").value;
+      const payment = document.getElementById("selected-payment-method").value;
+      const totalText = document.getElementById("cart-total").textContent.replace("$", "").trim();
+      const total = parseFloat(totalText);
+
       fetch("orders.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ items: selectedItems }),
+        body: JSON.stringify({
+          name,
+          phone,
+          email,
+          address,
+          state,
+          payment,
+          total,
+          items: selectedItems
+        }),
       })
       .then(res => res.json())
       .then(data => {
