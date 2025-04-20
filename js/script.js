@@ -222,9 +222,16 @@ function updateQtyDisplay(index) {
   document.getElementsByClassName('qty')[index].textContent = quantity[index];
 }
 
+
+
 // Update stock display UI
 function updateStockDisplay(index) {
-  const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${products[index].quantity}` : `QTY: ${products[index].quantity}`;
+  const cartDatax = JSON.parse(localStorage.getItem('cartProduct')) || [];
+const productInCartx = cartDatax.find(item => item.id === product[index].id);
+const isInCart = productInCartx ? true : false;
+  // const unitInfo = products[index].displayUnit ? `${products[index].displayUnit} / QTY: ${products[index].quantity}` : `QTY: ${products[index].quantity}`;
+  const unitInfo =  `${products[index].displayUnit} / QTY: ${isInCart ? (products[index].quantity - productInCartx.quantity ) : products[index].quantity}` ;
+
   document.getElementsByClassName('product-quantity')[index].textContent = `(${unitInfo})`;
  this.updateCartData();
 }
