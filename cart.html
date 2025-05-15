@@ -376,8 +376,21 @@
           items: selectedItems
         }),
       })
-      .then(res => res.json())
+      .then(res => {
+        console.log("Response status:", res.status);
+        
+        if (!res.ok) {
+          return res.text().then(text => {
+            console.error("Server error response:", text);
+            throw new Error(`Server error: ${res.status}`);
+          });
+        }
+        
+        // Chỉ parse JSON khi response OK
+        return res.json();
+      })
       .then(data => {
+        console.log("Order response:", data);
         const modalOverlay = document.getElementById("modal-overlay");
         const customerEmailEl = document.getElementById("customer-email");
 
@@ -461,11 +474,15 @@
           // document.getElementById("close-modal")?.addEventListener("click", () => {
           //   document.getElementById("modal-overlay")?.remove();
           // });
+        } else {
+          // Handle other errors
+          alert("Order submission failed: " + (data.error || "Unknown error"));
         }
         updateCartBadge();
       })
       .catch(error => {
         console.error("Order submission failed:", error);
+        alert("Order submission failed. Please try again or contact support.");
       });
     });
   </script>
