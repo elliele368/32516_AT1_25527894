@@ -1,8 +1,11 @@
 <?php
 header('Content-Type: application/json');
+include 'db.php';
 
 // 1. Kết nối database
-$conn = new mysqli("localhost", "root", "", "32516_AT1_25527894");
+$url = getenv('MYSQL_URL');
+$parts = parse_url($url);
+$conn = new mysqli($parts['host'], $parts['user'], $parts['pass'], ltrim($parts['path'], '/'), $parts['port']);
 if ($conn->connect_error) {
   die(json_encode(["error" => "Database connection failed"]));
 }
